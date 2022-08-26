@@ -1,0 +1,25 @@
+azure_tenant_id="aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"
+azure_subscription_id="aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"
+azure_region="fr-central"
+azure_state_access_key="1234"
+client_name="test"
+environment="test"
+stack="ci"
+custom_name="my-front-door"
+backend_pools = [{ "name" = "my-pool", "backends" = [{ "address" = "127.0.0.1", "host_header" = "example.com" }] }]
+backend_pools_health_probe = [{ "name" = "my-healthcheck" }]
+backend_pools_load_balancing = [{ "name" = "my-lb" }]
+# enforce_backend_pools_certificate_name_check = false
+# load_balancer_enabled
+# friendly_name
+# frontend_endpoint
+# routing_rules
+# custom_https_configuration
+# waf_policy_custom_name
+# enable_waf
+# waf_mode
+# waf_redirect_url
+# waf_custom_rules
+# waf_custom_block_response_status_code
+# waf_custom_block_response_body
+# waf_managed_rules

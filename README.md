@@ -1,92 +1,240 @@
-# cdn-frontdoor
+# Azure Front Door
+[![Changelog](https://img.shields.io/badge/changelog-release-green.svg)](CHANGELOG.md) [![Notice](https://img.shields.io/badge/notice-copyright-yellow.svg)](NOTICE) [![Apache V2 License](https://img.shields.io/badge/license-Apache%20V2-orange.svg)](LICENSE) [![TF Registry](https://img.shields.io/badge/terraform-registry-blue.svg)](https://registry.terraform.io/modules/claranet/cdn-frontdoor/azurerm/)
 
-Azure CDN FrontDoor (Standard/Premium) module
+This Terraform module is designed to create an [Azure CDN FrontDoor (Standard/Premium)](https://docs.microsoft.com/en-us/azure/frontdoor/standard-premium/tier-comparison) resource.
 
-## Getting started
+<!-- BEGIN_TF_DOCS -->
+## Global versioning rule for Claranet Azure modules
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
-
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
-
-## Add your files
-
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
-
-```
-cd existing_repo
-git remote add origin https://git.fr.clara.net/claranet/projects/cloud/azure/terraform/modules/cdn-frontdoor.git
-git branch -M main
-git push -uf origin main
-```
-
-## Integrate with your tools
-
-- [ ] [Set up project integrations](https://git.fr.clara.net/claranet/projects/cloud/azure/terraform/modules/cdn-frontdoor/-/settings/integrations)
-
-## Collaborate with your team
-
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Automatically merge when pipeline succeeds](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
-
-## Test and Deploy
-
-Use the built-in continuous integration in GitLab.
-
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing(SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
-
-***
-
-# Editing this README
-
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thank you to [makeareadme.com](https://www.makeareadme.com/) for this template.
-
-## Suggestions for a good README
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
-
-## Name
-Choose a self-explaining name for your project.
-
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
-
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
-
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
-
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+| Module version | Terraform version | AzureRM version |
+| -------------- | ----------------- | --------------- |
+| >= 6.x.x       | 1.x               | >= 3.0          |
+| >= 5.x.x       | 0.15.x            | >= 2.0          |
+| >= 4.x.x       | 0.13.x / 0.14.x   | >= 2.0          |
+| >= 3.x.x       | 0.12.x            | >= 2.0          |
+| >= 2.x.x       | 0.12.x            | < 2.0           |
+| <  2.x.x       | 0.11.x            | < 2.0           |
 
 ## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+This module is optimized to work with the [Claranet terraform-wrapper](https://github.com/claranet/terraform-wrapper) tool
+which set some terraform variables in the environment needed by this module.
+More details about variables set by the `terraform-wrapper` available in the [documentation](https://github.com/claranet/terraform-wrapper#environment).
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+```hcl
+module "azure_region" {
+  source  = "claranet/regions/azurerm"
+  version = "x.x.x"
 
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
+  azure_region = var.azure_region
+}
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+module "rg" {
+  source  = "claranet/rg/azurerm"
+  version = "x.x.x"
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
+  location    = module.azure_region.location
+  client_name = var.client_name
+  environment = var.environment
+  stack       = var.stack
+}
 
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
+module "logs" {
+  source  = "claranet/run-common/azurerm//modules/logs"
+  version = "x.x.x"
 
-## License
-For open source projects, say how it is licensed.
+  client_name         = var.client_name
+  environment         = var.environment
+  stack               = var.stack
+  location            = module.azure_region.location
+  location_short      = module.azure_region.location_short
+  resource_group_name = module.rg.resource_group_name
+}
 
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+module "frontdoor_waf" {
+  source  = "claranet/front-door/azurerm//modules/waf-policy"
+  version = "x.x.x"
+
+  client_name = var.client_name
+  environment = var.environment
+  stack       = var.stack
+
+  resource_group_name = module.rg.resource_group_name
+
+  managed_rules = [
+    {
+      type    = "DefaultRuleSet"
+      version = "1.0"
+      overrides = [{
+        rule_group_name = "PHP"
+        rules = [{
+          action  = "Block"
+          enabled = false
+          rule_id = 933111
+        }]
+      }]
+    },
+    {
+      type    = "Microsoft_BotManagerRuleSet"
+      version = "1.0"
+    },
+  ]
+
+  # Custom error page 
+  #custom_block_response_body = filebase64("${path.module}/files/403.html")
+}
+
+module "frontdoor_standard" {
+  source  = "claranet/cdn-frontdoor/azurerm"
+  version = "x.x.x"
+
+  client_name = var.client_name
+  environment = var.environment
+  stack       = var.stack
+
+  resource_group_name = module.rg.resource_group_name
+
+  frontdoor_waf_policy_id = module.front_door_waf.waf_policy_id
+
+  default_frontend_endpoint_enabled = false
+  default_routing_rule_enabled      = false
+
+  frontend_endpoints = [
+    {
+      name                                    = "custom-fo"
+      host_name                               = "custom-fo.example.com"
+      web_application_firewall_policy_link_id = module.front_door_waf.waf_policy_id
+      custom_https_configuration = {
+        certificate_source = "FrontDoor"
+      }
+    },
+    # {
+    #   name                                    = "custom-bo"
+    #   host_name                               = "custom-bo.example.com"
+    #   web_application_firewall_policy_link_id = module.front_door_waf.waf_policy_id
+    #   custom_https_configuration = {
+    #     certificate_source                         = "AzureKeyVault"
+    #     azure_key_vault_certificate_vault_id       = "<key_vault_id>"
+    #     azure_key_vault_certificate_secret_name    = "<key_vault_secret_name>"
+    #     azure_key_vault_certificate_secret_version = "<secret_version>" # optional, use "latest" if not defined
+    #   }
+    # },
+  ]
+
+  backend_pools = [{
+    name = "frontdoor-backend-pool-1",
+    backends = [{
+      host_header = "custom-fo.example.com"
+      address     = "1.2.3.4"
+    }]
+  }]
+
+  routing_rules = [
+    {
+      name               = "default"
+      frontend_endpoints = ["custom-fo"]
+      accepted_protocols = ["Http", "Https"]
+      patterns_to_match  = ["/*"]
+      forwarding_configurations = [
+        {
+          backend_pool_name                     = "frontdoor-backend-pool-1"
+          cache_enabled                         = false
+          cache_use_dynamic_compression         = false
+          cache_query_parameter_strip_directive = "StripAll"
+          forwarding_protocol                   = "MatchRequest"
+        }
+      ]
+    },
+    {
+      name               = "deny-install"
+      frontend_endpoints = ["custom-fo"]
+      accepted_protocols = ["Http", "Https"]
+      patterns_to_match  = ["/core/install.php"]
+
+      redirect_configurations = [{
+        custom_path       = "/"
+        redirect_protocol = "MatchRequest"
+        redirect_type     = "Found"
+      }]
+    },
+  ]
+
+  logs_destinations_ids = [
+    module.logs.log_analytics_workspace_id,
+    module.logs.logs_storage_account_id
+  ]
+}
+```
+
+## Providers
+
+| Name | Version |
+|------|---------|
+| azurecaf | ~> 1.1, >= 1.2.19 |
+| azurerm | ~> 3.10 |
+| external | >= 2 |
+
+## Modules
+
+| Name | Source | Version |
+|------|--------|---------|
+| diagnostics | claranet/diagnostic-settings/azurerm | 5.0.0 |
+
+## Resources
+
+| Name | Type |
+|------|------|
+| [azurecaf_name.frontdoor_endpoint](https://registry.terraform.io/providers/aztfmod/azurecaf/latest/docs/resources/name) | resource |
+| [azurecaf_name.frontdoor_lb](https://registry.terraform.io/providers/aztfmod/azurecaf/latest/docs/resources/name) | resource |
+| [azurecaf_name.frontdoor_probe](https://registry.terraform.io/providers/aztfmod/azurecaf/latest/docs/resources/name) | resource |
+| [azurecaf_name.frontdoor_profile](https://registry.terraform.io/providers/aztfmod/azurecaf/latest/docs/resources/name) | resource |
+| [azurerm_cdn_frontdoor_endpoint.frontdoor_endpoint](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/cdn_frontdoor_endpoint) | resource |
+| [azurerm_cdn_frontdoor_origin.example](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/cdn_frontdoor_origin) | resource |
+| [azurerm_cdn_frontdoor_origin_group.frontdoor_origin_group](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/cdn_frontdoor_origin_group) | resource |
+| [azurerm_cdn_frontdoor_profile.frontdoor_profile](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/cdn_frontdoor_profile) | resource |
+| [azurerm_cdn_frontdoor_rule_set.example](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/cdn_frontdoor_rule_set) | resource |
+| [external_external.frontdoor_ips](https://registry.terraform.io/providers/hashicorp/external/latest/docs/data-sources/external) | data source |
+
+## Inputs
+
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|:--------:|
+| client\_name | Client name/account used in naming | `string` | n/a | yes |
+| custom\_diagnostic\_settings\_name | Custom name of the diagnostics settings, name will be 'default' if not set. | `string` | `"default"` | no |
+| default\_tags\_enabled | Option to enable or disable default tags | `bool` | `true` | no |
+| endpoint\_enabled | Specifies if this CDN FrontDoor Endpoint is enabled? | `bool` | `true` | no |
+| environment | Project environment | `string` | n/a | yes |
+| extra\_tags | Extra tags to add | `map(string)` | `{}` | no |
+| frontdoor\_endpoint\_name | Specifies the name of the FrontDoor Endpoint. | `string` | `""` | no |
+| frontdoor\_profile\_name | Specifies the name of the FrontDoor Profile. | `string` | `""` | no |
+| frontdoor\_waf\_policy\_id | Frontdoor WAF Policy ID | `string` | `null` | no |
+| logs\_categories | Log categories to send to destinations. | `list(string)` | `null` | no |
+| logs\_destinations\_ids | List of destination resources Ids for logs diagnostics destination. Can be Storage Account, Log Analytics Workspace and Event Hub. No more than one of each can be set. Empty list to disable logging. | `list(string)` | n/a | yes |
+| logs\_metrics\_categories | Metrics categories to send to destinations. | `list(string)` | `null` | no |
+| logs\_retention\_days | Number of days to keep logs on storage account | `number` | `30` | no |
+| name\_prefix | Optional prefix for the generated name | `string` | `""` | no |
+| name\_suffix | Optional suffix for the generated name | `string` | `""` | no |
+| resource\_group\_name | Resource group name | `string` | n/a | yes |
+| response\_timeout\_seconds | Specifies the maximum response timeout in seconds. Possible values are between `16` and `240` seconds (inclusive). | `number` | `null` | no |
+| sku\_name | Specifies the SKU for this CDN FrontDoor Profile. Possible values include `Standard_AzureFrontDoor` and `Premium_AzureFrontDoor`. | `string` | `"Standard_AzureFrontDoor"` | no |
+| stack | Project stack name | `string` | n/a | yes |
+| use\_caf\_naming | Use the Azure CAF naming provider to generate default resource name. `custom_name` override this if set. Legacy default name is used if this is set to `false`. | `bool` | `true` | no |
+
+## Outputs
+
+| Name | Description |
+|------|-------------|
+| frontdoor\_backend\_address\_prefixes\_ipv4 | IPv4 address ranges used by the FrontDoor service backend |
+| frontdoor\_backend\_address\_prefixes\_ipv6 | IPv6 address ranges used by the FrontDoor service backend |
+| frontdoor\_cname | The host that each frontendEndpoint must CNAME to |
+| frontdoor\_firstparty\_address\_prefixes\_ipv4 | IPv4 address ranges used by the FrontDoor service "first party" |
+| frontdoor\_firstparty\_address\_prefixes\_ipv6 | IPv6 address ranges used by the FrontDoor service "first party" |
+| frontdoor\_frontend\_address\_prefixes\_ipv4 | IPv4 address ranges used by the FrontDoor service frontend |
+| frontdoor\_frontend\_address\_prefixes\_ipv6 | IPv6 address ranges used by the FrontDoor service frontend |
+| frontdoor\_frontend\_endpoints | The IDs of the frontend endpoints. |
+| frontdoor\_id | The ID of the FrontDoor. |
+| frontdoor\_name | The name of the FrontDoor |
+<!-- END_TF_DOCS -->
+## Related documentation
+
+Azure Front Door: [docs.microsoft.com/en-us/rest/api/frontdoor/](https://docs.microsoft.com/en-us/rest/api/frontdoor/)
