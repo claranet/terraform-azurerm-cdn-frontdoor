@@ -18,43 +18,52 @@ resource "azurerm_cdn_frontdoor_endpoint" "frontdoor_endpoint" {
 }
 
 resource "azurerm_cdn_frontdoor_origin_group" "frontdoor_origin_group" {
-  name                     = "example-origingroup"
+  for_each = local.origin_groups
+
+  name                     = coalesce(each.value.custom_name, azurecaf_name.frontdoor_origin_group[each.key].result)
   cdn_frontdoor_profile_id = azurerm_cdn_frontdoor_profile.frontdoor_profile.id
 
-  session_affinity_enabled = true
+  session_affinity_enabled = each.value.session_affinity_enabled
 
-  restore_traffic_time_to_healed_or_new_endpoint_in_minutes = 10
+  restore_traffic_time_to_healed_or_new_endpoint_in_minutes = each.value.restore_traffic_time_to_healed_or_new_endpoint_in_minutes
 
-  health_probe {
-    interval_in_seconds = 240
-    path                = "/healthProbe"
-    protocol            = "Https"
-    request_type        = "HEAD"
+  dynamic "health_probe" {
+    for_each = each.value.health_probe == null ? [] : ["enabled"]
+    content {
+      interval_in_seconds = each.value.health_probe.interval_in_seconds
+      path                = each.value.health_probe.path
+      protocol            = each.value.health_probe.protocol
+      request_type        = each.value.health_probe.request_type
+    }
   }
 
   load_balancing {
-    additional_latency_in_milliseconds = 0
-    sample_size                        = 16
-    successful_samples_required        = 3
+    additional_latency_in_milliseconds = each.value.load_balancing.additional_latency_in_milliseconds
+    sample_size                        = each.value.load_balancing.sample_size
+    successful_samples_required        = each.value.load_balancing.successful_samples_required
   }
 }
 
-resource "azurerm_cdn_frontdoor_origin" "example" {
-  name                          = "example-origin"
-  cdn_frontdoor_origin_group_id = azurerm_cdn_frontdoor_origin_group.frontdoor_profile.id
+resource "azurerm_cdn_frontdoor_origin" "frontdoor_origin" {
+  for_each = local.origins
 
-  health_probes_enabled          = true
-  certificate_name_check_enabled = false
+  name                          = coalesce(each.value.custom_name, azurecaf_name.frontdoor_origin[each.key].result)
+  cdn_frontdoor_origin_group_id = azurerm_cdn_frontdoor_origin_group.frontdoor_origin_group[each.value.origin_group_short_name].id
 
-  host_name          = "contoso.com"
-  http_port          = 80
-  https_port         = 443
-  origin_host_header = "www.contoso.com"
-  priority           = 1
-  weight             = 1
-}
+  health_probes_enabled          = each.value.health_probes_enabled
+  certificate_name_check_enabled = each.value.certificate_name_check_enabled
+  host_name                      = each.value.host_name
+  origin_host_header             = each.value.origin_host_header
+  priority                       = each.value.priority
+  weight                         = each.value.weight
 
-resource "azurerm_cdn_frontdoor_rule_set" "example" {
-  name                     = "ExampleRuleSet"
-  cdn_frontdoor_profile_id = azurerm_cdn_frontdoor_profile.frontdoor_profile.id
+  dynamic "private_link" {
+    for_each = each.value.private_link == null ? [] : ["enabled"]
+    content {
+      request_message        = each.value.private_link.request_message
+      target_type            = each.value.private_link.target_type
+      location               = each.value.private_link.location
+      private_link_target_id = each.value.private_link.private_link_target_id
+    }
+  }
 }

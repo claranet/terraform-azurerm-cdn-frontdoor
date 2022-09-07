@@ -172,7 +172,6 @@ module "frontdoor_standard" {
 |------|---------|
 | azurecaf | ~> 1.1, >= 1.2.19 |
 | azurerm | ~> 3.10 |
-| external | >= 2 |
 
 ## Modules
 
@@ -186,14 +185,14 @@ module "frontdoor_standard" {
 |------|------|
 | [azurecaf_name.frontdoor_endpoint](https://registry.terraform.io/providers/aztfmod/azurecaf/latest/docs/resources/name) | resource |
 | [azurecaf_name.frontdoor_lb](https://registry.terraform.io/providers/aztfmod/azurecaf/latest/docs/resources/name) | resource |
+| [azurecaf_name.frontdoor_origin](https://registry.terraform.io/providers/aztfmod/azurecaf/latest/docs/resources/name) | resource |
+| [azurecaf_name.frontdoor_origin_group](https://registry.terraform.io/providers/aztfmod/azurecaf/latest/docs/resources/name) | resource |
 | [azurecaf_name.frontdoor_probe](https://registry.terraform.io/providers/aztfmod/azurecaf/latest/docs/resources/name) | resource |
 | [azurecaf_name.frontdoor_profile](https://registry.terraform.io/providers/aztfmod/azurecaf/latest/docs/resources/name) | resource |
 | [azurerm_cdn_frontdoor_endpoint.frontdoor_endpoint](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/cdn_frontdoor_endpoint) | resource |
-| [azurerm_cdn_frontdoor_origin.example](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/cdn_frontdoor_origin) | resource |
+| [azurerm_cdn_frontdoor_origin.frontdoor_origin](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/cdn_frontdoor_origin) | resource |
 | [azurerm_cdn_frontdoor_origin_group.frontdoor_origin_group](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/cdn_frontdoor_origin_group) | resource |
 | [azurerm_cdn_frontdoor_profile.frontdoor_profile](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/cdn_frontdoor_profile) | resource |
-| [azurerm_cdn_frontdoor_rule_set.example](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/cdn_frontdoor_rule_set) | resource |
-| [external_external.frontdoor_ips](https://registry.terraform.io/providers/hashicorp/external/latest/docs/data-sources/external) | data source |
 
 ## Inputs
 
@@ -202,18 +201,19 @@ module "frontdoor_standard" {
 | client\_name | Client name/account used in naming | `string` | n/a | yes |
 | custom\_diagnostic\_settings\_name | Custom name of the diagnostics settings, name will be 'default' if not set. | `string` | `"default"` | no |
 | default\_tags\_enabled | Option to enable or disable default tags | `bool` | `true` | no |
-| endpoint\_enabled | Specifies if this CDN FrontDoor Endpoint is enabled? | `bool` | `true` | no |
+| endpoint\_enabled | Specifies if this CDN FrontDoor Endpoint is enabled | `bool` | `true` | no |
 | environment | Project environment | `string` | n/a | yes |
 | extra\_tags | Extra tags to add | `map(string)` | `{}` | no |
 | frontdoor\_endpoint\_name | Specifies the name of the FrontDoor Endpoint. | `string` | `""` | no |
 | frontdoor\_profile\_name | Specifies the name of the FrontDoor Profile. | `string` | `""` | no |
-| frontdoor\_waf\_policy\_id | Frontdoor WAF Policy ID | `string` | `null` | no |
 | logs\_categories | Log categories to send to destinations. | `list(string)` | `null` | no |
 | logs\_destinations\_ids | List of destination resources Ids for logs diagnostics destination. Can be Storage Account, Log Analytics Workspace and Event Hub. No more than one of each can be set. Empty list to disable logging. | `list(string)` | n/a | yes |
 | logs\_metrics\_categories | Metrics categories to send to destinations. | `list(string)` | `null` | no |
 | logs\_retention\_days | Number of days to keep logs on storage account | `number` | `30` | no |
 | name\_prefix | Optional prefix for the generated name | `string` | `""` | no |
 | name\_suffix | Optional suffix for the generated name | `string` | `""` | no |
+| origin\_groups | Manages CDN FrontDoor Origin Groups | <pre>map(object({<br>    custom_name                                               = optional(string)<br>    session_affinity_enabled                                  = optional(bool)<br>    restore_traffic_time_to_healed_or_new_endpoint_in_minutes = optional(number)<br>    health_probe = optional(object({<br>      interval_in_seconds = number<br>      path                = string<br>      protocol            = string<br>      request_type        = string<br>    }))<br>    load_balancing = object({<br>      additional_latency_in_milliseconds = optional(number)<br>      sample_size                        = optional(number)<br>      successful_samples_required        = optional(number)<br>    })<br>  }))</pre> | `{}` | no |
+| origins | Manages CDN FrontDoor Origin Groups | <pre>map(object({<br>    custom_name                    = optional(string)<br>    origin_group_short_name        = string<br>    health_probes_enabled          = optional(bool)<br>    certificate_name_check_enabled = optional(bool)<br><br>    host_name          = string<br>    http_port          = optional(number)<br>    https_port         = optional(number)<br>    origin_host_header = optional(string)<br>    priority           = optional(number)<br>    weight             = optional(number)<br><br>    private_link = optional(object({<br>      request_message        = optional(string)<br>      target_type            = optional(string)<br>      location               = string<br>      private_link_target_id = string<br>    }))<br>  }))</pre> | `{}` | no |
 | resource\_group\_name | Resource group name | `string` | n/a | yes |
 | response\_timeout\_seconds | Specifies the maximum response timeout in seconds. Possible values are between `16` and `240` seconds (inclusive). | `number` | `null` | no |
 | sku\_name | Specifies the SKU for this CDN FrontDoor Profile. Possible values include `Standard_AzureFrontDoor` and `Premium_AzureFrontDoor`. | `string` | `"Standard_AzureFrontDoor"` | no |
@@ -222,18 +222,7 @@ module "frontdoor_standard" {
 
 ## Outputs
 
-| Name | Description |
-|------|-------------|
-| frontdoor\_backend\_address\_prefixes\_ipv4 | IPv4 address ranges used by the FrontDoor service backend |
-| frontdoor\_backend\_address\_prefixes\_ipv6 | IPv6 address ranges used by the FrontDoor service backend |
-| frontdoor\_cname | The host that each frontendEndpoint must CNAME to |
-| frontdoor\_firstparty\_address\_prefixes\_ipv4 | IPv4 address ranges used by the FrontDoor service "first party" |
-| frontdoor\_firstparty\_address\_prefixes\_ipv6 | IPv6 address ranges used by the FrontDoor service "first party" |
-| frontdoor\_frontend\_address\_prefixes\_ipv4 | IPv4 address ranges used by the FrontDoor service frontend |
-| frontdoor\_frontend\_address\_prefixes\_ipv6 | IPv6 address ranges used by the FrontDoor service frontend |
-| frontdoor\_frontend\_endpoints | The IDs of the frontend endpoints. |
-| frontdoor\_id | The ID of the FrontDoor. |
-| frontdoor\_name | The name of the FrontDoor |
+No outputs.
 <!-- END_TF_DOCS -->
 ## Related documentation
 

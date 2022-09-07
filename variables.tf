@@ -39,17 +39,66 @@ variable "response_timeout_seconds" {
 # FrontDoor Endpoint
 
 variable "endpoint_enabled" {
-  description = "Specifies if this CDN FrontDoor Endpoint is enabled?"
+  description = "Specifies if this CDN FrontDoor Endpoint is enabled"
   type        = bool
   default     = true
 }
 
+# ------------------
+# FrontDoor Origin Groups
 
+variable "origin_groups" {
+  description = "Manages CDN FrontDoor Origin Groups"
+  type = map(object({
+    custom_name                                               = optional(string)
+    session_affinity_enabled                                  = optional(bool)
+    restore_traffic_time_to_healed_or_new_endpoint_in_minutes = optional(number)
+    health_probe = optional(object({
+      interval_in_seconds = number
+      path                = string
+      protocol            = string
+      request_type        = string
+    }))
+    load_balancing = object({
+      additional_latency_in_milliseconds = optional(number)
+      sample_size                        = optional(number)
+      successful_samples_required        = optional(number)
+    })
+  }))
+  default = {}
+}
+
+# ------------------
+# FrontDoor Origins
+variable "origins" {
+  description = "Manages CDN FrontDoor Origin Groups"
+  type = map(object({
+    custom_name                    = optional(string)
+    origin_group_short_name        = string
+    health_probes_enabled          = optional(bool)
+    certificate_name_check_enabled = optional(bool)
+
+    host_name          = string
+    http_port          = optional(number)
+    https_port         = optional(number)
+    origin_host_header = optional(string)
+    priority           = optional(number)
+    weight             = optional(number)
+
+    private_link = optional(object({
+      request_message        = optional(string)
+      target_type            = optional(string)
+      location               = string
+      private_link_target_id = string
+    }))
+  }))
+  default = {}
+}
 
 # ------------------
 # FrontDoor WAF Policy
-variable "frontdoor_waf_policy_id" {
-  description = "Frontdoor WAF Policy ID"
-  type        = string
-  default     = null
-}
+# variable "frontdoor_waf_policy_id" {
+#   description = "Frontdoor WAF Policy ID"
+#   type        = string
+#   default     = null
+# }
