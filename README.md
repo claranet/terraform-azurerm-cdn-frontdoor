@@ -172,13 +172,13 @@ module "frontdoor_standard" {
 | Name | Version |
 |------|---------|
 | azurecaf | ~> 1.1, >= 1.2.19 |
-| azurerm | ~> 3.10 |
+| azurerm | >= 3.21.1 |
 
 ## Modules
 
 | Name | Source | Version |
 |------|--------|---------|
-| diagnostics | claranet/diagnostic-settings/azurerm | 5.0.0 |
+| diagnostics | git::ssh://git@git.fr.clara.net/claranet/projects/cloud/azure/terraform/modules/diagnostic-settings.git | AZ-839_log_update |
 
 ## Resources
 

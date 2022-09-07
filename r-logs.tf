@@ -1,8 +1,9 @@
 module "diagnostics" {
-  source  = "claranet/diagnostic-settings/azurerm"
-  version = "5.0.0"
+  # source  = "claranet/diagnostic-settings/azurerm"
+  # version = "5.0.0"
+  source = "git::ssh://git@git.fr.clara.net/claranet/projects/cloud/azure/terraform/modules/diagnostic-settings.git?ref=AZ-839_log_update"
 
-  resource_id = azurerm_frontdoor.frontdoor.id
+  resource_id = azurerm_cdn_frontdoor_profile.frontdoor_profile.id
 
   logs_destinations_ids = var.logs_destinations_ids
   log_categories        = var.logs_categories
