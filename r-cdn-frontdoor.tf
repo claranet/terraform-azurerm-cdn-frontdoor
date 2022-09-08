@@ -18,7 +18,7 @@ resource "azurerm_cdn_frontdoor_endpoint" "frontdoor_endpoint" {
 }
 
 resource "azurerm_cdn_frontdoor_origin_group" "frontdoor_origin_group" {
-  for_each = local.origin_groups
+  for_each = var.origin_groups
 
   name                     = coalesce(each.value.custom_name, azurecaf_name.frontdoor_origin_group[each.key].result)
   cdn_frontdoor_profile_id = azurerm_cdn_frontdoor_profile.frontdoor_profile.id
@@ -45,7 +45,7 @@ resource "azurerm_cdn_frontdoor_origin_group" "frontdoor_origin_group" {
 }
 
 resource "azurerm_cdn_frontdoor_origin" "frontdoor_origin" {
-  for_each = local.origins
+  for_each = var.origins
 
   name                          = coalesce(each.value.custom_name, azurecaf_name.frontdoor_origin[each.key].result)
   cdn_frontdoor_origin_group_id = azurerm_cdn_frontdoor_origin_group.frontdoor_origin_group[each.value.origin_group_short_name].id

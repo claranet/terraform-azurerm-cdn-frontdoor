@@ -51,8 +51,8 @@ variable "origin_groups" {
   description = "Manages CDN FrontDoor Origin Groups"
   type = map(object({
     custom_name                                               = optional(string)
-    session_affinity_enabled                                  = optional(bool)
-    restore_traffic_time_to_healed_or_new_endpoint_in_minutes = optional(number)
+    session_affinity_enabled                                  = optional(bool, true)
+    restore_traffic_time_to_healed_or_new_endpoint_in_minutes = optional(number, 10)
     health_probe = optional(object({
       interval_in_seconds = number
       path                = string
@@ -60,9 +60,9 @@ variable "origin_groups" {
       request_type        = string
     }))
     load_balancing = object({
-      additional_latency_in_milliseconds = optional(number)
-      sample_size                        = optional(number)
-      successful_samples_required        = optional(number)
+      additional_latency_in_milliseconds = optional(number, 0)
+      sample_size                        = optional(number, 16)
+      successful_samples_required        = optional(number, 3)
     })
   }))
   default = {}
@@ -75,15 +75,15 @@ variable "origins" {
   type = map(object({
     custom_name                    = optional(string)
     origin_group_short_name        = string
-    health_probes_enabled          = optional(bool)
-    certificate_name_check_enabled = optional(bool)
+    health_probes_enabled          = optional(bool, true)
+    certificate_name_check_enabled = optional(bool, true)
 
     host_name          = string
-    http_port          = optional(number)
-    https_port         = optional(number)
+    http_port          = optional(number, 80)
+    https_port         = optional(number, 443)
     origin_host_header = optional(string)
-    priority           = optional(number)
-    weight             = optional(number)
+    priority           = optional(number, 1)
+    weight             = optional(number, 1)
 
     private_link = optional(object({
       request_message        = optional(string)
