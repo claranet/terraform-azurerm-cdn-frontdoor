@@ -71,7 +71,7 @@ variable "origin_groups" {
 # ------------------
 # FrontDoor Origins
 variable "origins" {
-  description = "Manages CDN FrontDoor Origin Groups"
+  description = "Manages CDN FrontDoor Origins"
   type = map(object({
     custom_name                    = optional(string)
     origin_group_short_name        = string

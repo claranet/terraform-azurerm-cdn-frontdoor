@@ -8,7 +8,6 @@ This Terraform module is designed to create an [Azure CDN FrontDoor (Standard/Pr
 
 | Module version | Terraform version | AzureRM version |
 | -------------- | ----------------- | --------------- |
-| >= 7.x.x       | 1.3.x             | >= 3.0          |
 | >= 6.x.x       | 1.x               | >= 3.0          |
 | >= 5.x.x       | 0.15.x            | >= 2.0          |
 | >= 4.x.x       | 0.13.x / 0.14.x   | >= 2.0          |
@@ -95,75 +94,38 @@ module "frontdoor_standard" {
 
   resource_group_name = module.rg.resource_group_name
 
-  frontdoor_waf_policy_id = module.front_door_waf.waf_policy_id
+  # frontdoor_waf_policy_id = module.front_door_waf.waf_policy_id
 
-  default_frontend_endpoint_enabled = false
-  default_routing_rule_enabled      = false
-
-  frontend_endpoints = [
-    {
-      name                                    = "custom-fo"
-      host_name                               = "custom-fo.example.com"
-      web_application_firewall_policy_link_id = module.front_door_waf.waf_policy_id
-      custom_https_configuration = {
-        certificate_source = "FrontDoor"
+  origin_groups = {
+    contoso = {
+      health_probe = {
+        interval_in_seconds = 250
+        path                = "/"
+        protocol            = "Https"
+        request_type        = "GET"
       }
-    },
-    # {
-    #   name                                    = "custom-bo"
-    #   host_name                               = "custom-bo.example.com"
-    #   web_application_firewall_policy_link_id = module.front_door_waf.waf_policy_id
-    #   custom_https_configuration = {
-    #     certificate_source                         = "AzureKeyVault"
-    #     azure_key_vault_certificate_vault_id       = "<key_vault_id>"
-    #     azure_key_vault_certificate_secret_name    = "<key_vault_secret_name>"
-    #     azure_key_vault_certificate_secret_version = "<secret_version>" # optional, use "latest" if not defined
-    #   }
-    # },
-  ]
+      load_balancing = {
+        successful_samples_required = 1
+      }
+    }
+  }
 
-  backend_pools = [{
-    name = "frontdoor-backend-pool-1",
-    backends = [{
-      host_header = "custom-fo.example.com"
-      address     = "1.2.3.4"
-    }]
-  }]
-
-  routing_rules = [
-    {
-      name               = "default"
-      frontend_endpoints = ["custom-fo"]
-      accepted_protocols = ["Http", "Https"]
-      patterns_to_match  = ["/*"]
-      forwarding_configurations = [
-        {
-          backend_pool_name                     = "frontdoor-backend-pool-1"
-          cache_enabled                         = false
-          cache_use_dynamic_compression         = false
-          cache_query_parameter_strip_directive = "StripAll"
-          forwarding_protocol                   = "MatchRequest"
-        }
-      ]
-    },
-    {
-      name               = "deny-install"
-      frontend_endpoints = ["custom-fo"]
-      accepted_protocols = ["Http", "Https"]
-      patterns_to_match  = ["/core/install.php"]
-
-      redirect_configurations = [{
-        custom_path       = "/"
-        redirect_protocol = "MatchRequest"
-        redirect_type     = "Found"
-      }]
-    },
-  ]
+  origins = {
+    contoso-com = {
+      origin_group_short_name        = "contoso"
+      certificate_name_check_enabled = false
+      host_name                      = "www.contoso.com"
+    }
+  }
 
   logs_destinations_ids = [
     module.logs.log_analytics_workspace_id,
     module.logs.logs_storage_account_id
   ]
+
+  extra_tags = {
+    foo = "bar"
+  }
 }
 ```
 
@@ -214,7 +176,7 @@ module "frontdoor_standard" {
 | name\_prefix | Optional prefix for the generated name | `string` | `""` | no |
 | name\_suffix | Optional suffix for the generated name | `string` | `""` | no |
 | origin\_groups | Manages CDN FrontDoor Origin Groups | <pre>map(object({<br>    custom_name                                               = optional(string)<br>    session_affinity_enabled                                  = optional(bool, true)<br>    restore_traffic_time_to_healed_or_new_endpoint_in_minutes = optional(number, 10)<br>    health_probe = optional(object({<br>      interval_in_seconds = number<br>      path                = string<br>      protocol            = string<br>      request_type        = string<br>    }))<br>    load_balancing = object({<br>      additional_latency_in_milliseconds = optional(number, 0)<br>      sample_size                        = optional(number, 16)<br>      successful_samples_required        = optional(number, 3)<br>    })<br>  }))</pre> | `{}` | no |
-| origins | Manages CDN FrontDoor Origin Groups | <pre>map(object({<br>    custom_name                    = optional(string)<br>    origin_group_short_name        = string<br>    health_probes_enabled          = optional(bool, true)<br>    certificate_name_check_enabled = optional(bool, true)<br><br>    host_name          = string<br>    http_port          = optional(number, 80)<br>    https_port         = optional(number, 443)<br>    origin_host_header = optional(string)<br>    priority           = optional(number, 1)<br>    weight             = optional(number, 1)<br><br>    private_link = optional(object({<br>      request_message        = optional(string)<br>      target_type            = optional(string)<br>      location               = string<br>      private_link_target_id = string<br>    }))<br>  }))</pre> | `{}` | no |
+| origins | Manages CDN FrontDoor Origins | <pre>map(object({<br>    custom_name                    = optional(string)<br>    origin_group_short_name        = string<br>    health_probes_enabled          = optional(bool, true)<br>    certificate_name_check_enabled = optional(bool, true)<br><br>    host_name          = string<br>    http_port          = optional(number, 80)<br>    https_port         = optional(number, 443)<br>    origin_host_header = optional(string)<br>    priority           = optional(number, 1)<br>    weight             = optional(number, 1)<br><br>    private_link = optional(object({<br>      request_message        = optional(string)<br>      target_type            = optional(string)<br>      location               = string<br>      private_link_target_id = string<br>    }))<br>  }))</pre> | `{}` | no |
 | resource\_group\_name | Resource group name | `string` | n/a | yes |
 | response\_timeout\_seconds | Specifies the maximum response timeout in seconds. Possible values are between `16` and `240` seconds (inclusive). | `number` | `null` | no |
 | sku\_name | Specifies the SKU for this CDN FrontDoor Profile. Possible values include `Standard_AzureFrontDoor` and `Premium_AzureFrontDoor`. | `string` | `"Standard_AzureFrontDoor"` | no |
