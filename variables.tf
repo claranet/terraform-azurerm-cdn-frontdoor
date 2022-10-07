@@ -73,9 +73,10 @@ variable "origin_groups" {
 variable "origins" {
   description = "Manages CDN FrontDoor Origins"
   type = map(object({
-    custom_name                    = optional(string)
-    origin_group_short_name        = string
-    health_probes_enabled          = optional(bool, true)
+    custom_name             = optional(string)
+    origin_group_short_name = string
+    enabled                 = optional(bool, true)
+    #health_probes_enabled          = optional(bool, true)
     certificate_name_check_enabled = optional(bool, true)
 
     host_name          = string

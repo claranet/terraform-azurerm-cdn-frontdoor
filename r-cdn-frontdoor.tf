@@ -50,7 +50,8 @@ resource "azurerm_cdn_frontdoor_origin" "frontdoor_origin" {
   name                          = coalesce(each.value.custom_name, azurecaf_name.frontdoor_origin[each.key].result)
   cdn_frontdoor_origin_group_id = azurerm_cdn_frontdoor_origin_group.frontdoor_origin_group[each.value.origin_group_short_name].id
 
-  health_probes_enabled          = each.value.health_probes_enabled
+  enabled = each.value.enabled
+  #health_probes_enabled          = each.value.health_probes_enabled
   certificate_name_check_enabled = each.value.certificate_name_check_enabled
   host_name                      = each.value.host_name
   origin_host_header             = each.value.origin_host_header
