@@ -8,6 +8,7 @@ This Terraform module is designed to create an [Azure CDN FrontDoor (Standard/Pr
 
 | Module version | Terraform version | AzureRM version |
 | -------------- | ----------------- | --------------- |
+| >= 7.x.x       | 1.3.x             | >= 3.0          |
 | >= 6.x.x       | 1.x               | >= 3.0          |
 | >= 5.x.x       | 0.15.x            | >= 2.0          |
 | >= 4.x.x       | 0.13.x / 0.14.x   | >= 2.0          |
@@ -140,7 +141,7 @@ module "frontdoor_standard" {
 
 | Name | Source | Version |
 |------|--------|---------|
-| diagnostics | git::ssh://git@git.fr.clara.net/claranet/projects/cloud/azure/terraform/modules/diagnostic-settings.git | AZ-839_log_update |
+| diagnostics | claranet/diagnostic-settings/azurerm | 6.0.0 |
 
 ## Resources
 
@@ -176,7 +177,7 @@ module "frontdoor_standard" {
 | name\_prefix | Optional prefix for the generated name | `string` | `""` | no |
 | name\_suffix | Optional suffix for the generated name | `string` | `""` | no |
 | origin\_groups | Manages CDN FrontDoor Origin Groups | <pre>map(object({<br>    custom_name                                               = optional(string)<br>    session_affinity_enabled                                  = optional(bool, true)<br>    restore_traffic_time_to_healed_or_new_endpoint_in_minutes = optional(number, 10)<br>    health_probe = optional(object({<br>      interval_in_seconds = number<br>      path                = string<br>      protocol            = string<br>      request_type        = string<br>    }))<br>    load_balancing = object({<br>      additional_latency_in_milliseconds = optional(number, 0)<br>      sample_size                        = optional(number, 16)<br>      successful_samples_required        = optional(number, 3)<br>    })<br>  }))</pre> | `{}` | no |
-| origins | Manages CDN FrontDoor Origins | <pre>map(object({<br>    custom_name                    = optional(string)<br>    origin_group_short_name        = string<br>    health_probes_enabled          = optional(bool, true)<br>    certificate_name_check_enabled = optional(bool, true)<br><br>    host_name          = string<br>    http_port          = optional(number, 80)<br>    https_port         = optional(number, 443)<br>    origin_host_header = optional(string)<br>    priority           = optional(number, 1)<br>    weight             = optional(number, 1)<br><br>    private_link = optional(object({<br>      request_message        = optional(string)<br>      target_type            = optional(string)<br>      location               = string<br>      private_link_target_id = string<br>    }))<br>  }))</pre> | `{}` | no |
+| origins | Manages CDN FrontDoor Origins | <pre>map(object({<br>    custom_name             = optional(string)<br>    origin_group_short_name = string<br>    enabled                 = optional(bool, true)<br>    #health_probes_enabled          = optional(bool, true)<br>    certificate_name_check_enabled = optional(bool, true)<br><br>    host_name          = string<br>    http_port          = optional(number, 80)<br>    https_port         = optional(number, 443)<br>    origin_host_header = optional(string)<br>    priority           = optional(number, 1)<br>    weight             = optional(number, 1)<br><br>    private_link = optional(object({<br>      request_message        = optional(string)<br>      target_type            = optional(string)<br>      location               = string<br>      private_link_target_id = string<br>    }))<br>  }))</pre> | `{}` | no |
 | resource\_group\_name | Resource group name | `string` | n/a | yes |
 | response\_timeout\_seconds | Specifies the maximum response timeout in seconds. Possible values are between `16` and `240` seconds (inclusive). | `number` | `null` | no |
 | sku\_name | Specifies the SKU for this CDN FrontDoor Profile. Possible values include `Standard_AzureFrontDoor` and `Premium_AzureFrontDoor`. | `string` | `"Standard_AzureFrontDoor"` | no |
