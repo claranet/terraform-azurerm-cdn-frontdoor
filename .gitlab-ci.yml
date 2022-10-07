@@ -6,6 +6,6 @@ variables:
 include:
   - template: 'Workflows/Branch-Pipelines.gitlab-ci.yml'
   - project: 'claranet/projects/cloud/azure/terraform/ci'
-    ref: AZ-840_tf_13
+    ref: master
     file: '/pipeline.yml'
 ...
