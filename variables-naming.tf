@@ -23,9 +23,3 @@ variable "frontdoor_profile_name" {
   type        = string
   default     = ""
 }
-
-variable "frontdoor_endpoint_name" {
-  description = "Specifies the name of the FrontDoor Endpoint."
-  type        = string
-  default     = ""
-}

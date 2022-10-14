@@ -22,7 +22,6 @@ variable "resource_group_name" {
 
 # ------------------
 # FrontDoor Profile
-
 variable "sku_name" {
   description = "Specifies the SKU for this CDN FrontDoor Profile. Possible values include `Standard_AzureFrontDoor` and `Premium_AzureFrontDoor`."
   type        = string
@@ -32,21 +31,22 @@ variable "sku_name" {
 variable "response_timeout_seconds" {
   description = "Specifies the maximum response timeout in seconds. Possible values are between `16` and `240` seconds (inclusive)."
   type        = number
-  default     = null
+  default     = 120
 }
 
 # ------------------
 # FrontDoor Endpoint
-
-variable "endpoint_enabled" {
-  description = "Specifies if this CDN FrontDoor Endpoint is enabled"
-  type        = bool
-  default     = true
+variable "endpoints" {
+  description = "Manages CDN FrontDoor Endpoints"
+  type = map(object({
+    custom_name = optional(string)
+    enabled     = optional(bool, true)
+  }))
+  default = {}
 }
 
 # ------------------
 # FrontDoor Origin Groups
-
 variable "origin_groups" {
   description = "Manages CDN FrontDoor Origin Groups"
   type = map(object({
@@ -60,8 +60,8 @@ variable "origin_groups" {
       request_type        = string
     }))
     load_balancing = object({
-      additional_latency_in_milliseconds = optional(number, 0)
-      sample_size                        = optional(number, 16)
+      additional_latency_in_milliseconds = optional(number, 50)
+      sample_size                        = optional(number, 4)
       successful_samples_required        = optional(number, 3)
     })
   }))
@@ -73,10 +73,9 @@ variable "origin_groups" {
 variable "origins" {
   description = "Manages CDN FrontDoor Origins"
   type = map(object({
-    custom_name             = optional(string)
-    origin_group_short_name = string
-    enabled                 = optional(bool, true)
-    #health_probes_enabled          = optional(bool, true)
+    custom_name                    = optional(string)
+    origin_group_short_name        = string
+    enabled                        = optional(bool, true)
     certificate_name_check_enabled = optional(bool, true)
 
     host_name          = string
@@ -92,6 +91,56 @@ variable "origins" {
       location               = string
       private_link_target_id = string
     }))
+  }))
+  default = {}
+}
+
+# ------------------
+# FrontDoor Custom Domains
+variable "custom_domains" {
+  description = "Manages CDN FrontDoor Custom Domains"
+  type = map(object({
+    #route_name = optional(string) TODO ROUTE ASSOCIATION
+    custom_name = optional(string)
+    host_name   = string
+    dns_zone_id = optional(string)
+    tls = object({
+      certificate_type        = optional(string, "ManagedCertificate")
+      minimum_tls_version     = optional(string, "TLS12")
+      cdn_frontdoor_secret_id = optional(string)
+    })
+  }))
+  default = {}
+}
+
+# ------------------
+# FrontDoor Routes
+variable "routes" {
+  description = "Manages a CDN FrontDoor Routes"
+  type = map(object({
+    custom_name = optional(string)
+    enabled     = optional(bool, true)
+
+    endpoint_short_name     = string
+    origin_group_short_name = string
+    origins_short_names     = list(string)
+
+    forwarding_protocol = string
+    patterns_to_match   = list(string)
+    supported_protocols = list(string)
+    cache = optional(object({
+      query_string_caching_behavior = optional(string, "IgnoreQueryString")
+      query_strings                 = optional(string)
+      compression_enabled           = optional(bool, false)
+      content_types_to_compress     = optional(list(string))
+    }))
+
+    custom_domains_short_names = optional(list(string))
+    cdn_frontdoor_origin_path  = optional(string)
+    rule_sets_short_names      = optional(list(string))
+
+    https_redirect_enabled = optional(bool, true)
+    link_to_default_domain = optional(bool, true)
   }))
   default = {}
 }

@@ -9,10 +9,12 @@ resource "azurerm_cdn_frontdoor_profile" "frontdoor_profile" {
 }
 
 resource "azurerm_cdn_frontdoor_endpoint" "frontdoor_endpoint" {
-  name                     = local.frontdoor_endpoint_name
+  for_each = var.endpoints
+
+  name                     = coalesce(each.value.custom_name, azurecaf_name.frontdoor_endpoint[each.key].result)
   cdn_frontdoor_profile_id = azurerm_cdn_frontdoor_profile.frontdoor_profile.id
 
-  enabled = var.endpoint_enabled
+  enabled = each.value.enabled
 
   tags = merge(local.default_tags, var.extra_tags)
 }
@@ -50,10 +52,11 @@ resource "azurerm_cdn_frontdoor_origin" "frontdoor_origin" {
   name                          = coalesce(each.value.custom_name, azurecaf_name.frontdoor_origin[each.key].result)
   cdn_frontdoor_origin_group_id = azurerm_cdn_frontdoor_origin_group.frontdoor_origin_group[each.value.origin_group_short_name].id
 
-  enabled = each.value.enabled
-  #health_probes_enabled          = each.value.health_probes_enabled
+  enabled                        = each.value.enabled
   certificate_name_check_enabled = each.value.certificate_name_check_enabled
   host_name                      = each.value.host_name
+  http_port                      = each.value.http_port
+  https_port                     = each.value.https_port
   origin_host_header             = each.value.origin_host_header
   priority                       = each.value.priority
   weight                         = each.value.weight
@@ -68,3 +71,70 @@ resource "azurerm_cdn_frontdoor_origin" "frontdoor_origin" {
     }
   }
 }
+
+resource "azurerm_cdn_frontdoor_custom_domain" "frontdoor_custom_domain" {
+  for_each = var.custom_domains
+
+  name                     = coalesce(each.value.custom_name, azurecaf_name.frontdoor_custom_domain[each.key].result)
+  cdn_frontdoor_profile_id = azurerm_cdn_frontdoor_profile.frontdoor_profile.id
+  dns_zone_id              = each.value.dns_zone_id
+  host_name                = each.value.host_name
+
+  tls {
+    certificate_type        = each.value.tls.certificate_type
+    minimum_tls_version     = each.value.tls.minimum_tls_version
+    cdn_frontdoor_secret_id = each.value.tls.cdn_frontdoor_secret_id
+  }
+}
+
+
+# TODO - Rework
+locals {
+  origins_names_per_route = { for route_name, route_meta in var.routes : route_name => [
+    for origin in route_meta.origins_short_names :
+    azurerm_cdn_frontdoor_origin.frontdoor_origin[origin].id
+    ]
+  }
+}
+resource "azurerm_cdn_frontdoor_route" "frontdoor_custom_route" {
+
+  for_each = var.routes
+
+  name    = coalesce(each.value.custom_name, azurecaf_name.frontdoor_route[each.key].result)
+  enabled = each.value.enabled
+
+  cdn_frontdoor_endpoint_id     = azurerm_cdn_frontdoor_endpoint.frontdoor_endpoint[each.value.endpoint_short_name].id
+  cdn_frontdoor_origin_group_id = azurerm_cdn_frontdoor_origin_group.frontdoor_origin_group[each.value.origin_group_short_name].id
+
+  #cdn_frontdoor_origin_ids = [azurerm_cdn_frontdoor_origin.frontdoor_origin[each.value.origins_short_names[*]].id]
+  cdn_frontdoor_origin_ids = local.origins_names_per_route[each.key]
+
+  forwarding_protocol = each.value.forwarding_protocol
+  patterns_to_match   = each.value.patterns_to_match
+  supported_protocols = each.value.supported_protocols
+
+  dynamic "cache" {
+    for_each = each.value.cache == null ? [] : ["enabled"]
+    content {
+      query_string_caching_behavior = each.value.cache.query_string_caching_behavior
+      query_strings                 = each.value.cache.query_strings
+      compression_enabled           = each.value.cache.compression_enabled
+      content_types_to_compress     = each.value.cache.content_types_to_compress
+    }
+  }
+
+  #cdn_frontdoor_custom_domain_ids = [azurerm_cdn_frontdoor_custom_domain.frontdoor_custom_domain[each.value.custom_domains_short_names[*].id]]
+  cdn_frontdoor_origin_path = each.value.cdn_frontdoor_origin_path
+  #cdn_frontdoor_rule_set_ids      = [azurerm_cdn_frontdoor_rule_set.frontdoor_rule_set[each.value.rule_sets_short_names[*]].id]
+
+  https_redirect_enabled = each.value.https_redirect_enabled
+  link_to_default_domain = each.value.link_to_default_domain
+}
+
+
+# resource "azurerm_cdn_frontdoor_custom_domain_association" "frontdoor_custom_domain_association" {
+#   for_each = var.custom_domains.id
+
+#   cdn_frontdoor_custom_domain_id                    = each.value.
+#   cdn_frontdoor_route_ids = azurerm_cdn_frontdoor_profile.frontdoor_profile.id
+# }
