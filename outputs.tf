@@ -54,16 +54,13 @@ output "custom_domains" {
 }
 
 output "custom_domains_ssl_validations" {
-  value = { for cd_name, _ in var.custom_domains : cd_name => {
-    id                          = azurerm_cdn_frontdoor_custom_domain.frontdoor_custom_domain[cd_name].id
-    expiration_date             = azurerm_cdn_frontdoor_custom_domain.frontdoor_custom_domain[cd_name].expiration_date
-    validation_txt_record_value = azurerm_cdn_frontdoor_custom_domain.frontdoor_custom_domain[cd_name].validation_token
-    validation_txt_record_name = join(".", ["_dnsauth",
-      var.custom_domains[cd_name].host_name
-    ])
-
+  value = {
+    for cd_name, _ in var.custom_domains : cd_name => {
+      id                          = azurerm_cdn_frontdoor_custom_domain.frontdoor_custom_domain[cd_name].id
+      expiration_date             = azurerm_cdn_frontdoor_custom_domain.frontdoor_custom_domain[cd_name].expiration_date
+      validation_txt_record_value = azurerm_cdn_frontdoor_custom_domain.frontdoor_custom_domain[cd_name].validation_token
+      validation_txt_record_name  = join(".", ["_dnsauth", var.custom_domains[cd_name].host_name])
     }
-
   }
 }
 
