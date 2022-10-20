@@ -59,11 +59,16 @@ variable "origin_groups" {
       protocol            = string
       request_type        = string
     }))
-    load_balancing = object({
+    load_balancing = optional(object({
       additional_latency_in_milliseconds = optional(number, 50)
       sample_size                        = optional(number, 4)
       successful_samples_required        = optional(number, 3)
-    })
+      }), {
+      additional_latency_in_milliseconds = 50
+      sample_size                        = 4
+      successful_samples_required        = 3
+      }
+    )
   }))
   default = {}
 }
@@ -104,13 +109,29 @@ variable "custom_domains" {
     custom_name = optional(string)
     host_name   = string
     dns_zone_id = optional(string)
-    tls = object({
-      certificate_type        = optional(string, "ManagedCertificate")
-      minimum_tls_version     = optional(string, "TLS12")
-      cdn_frontdoor_secret_id = optional(string)
+    tls = optional(object({
+      certificate_type        = string
+      minimum_tls_version     = string
+      cdn_frontdoor_secret_id = string
+      }), {
+      certificate_type        = "ManagedCertificate"
+      minimum_tls_version     = "TLS12"
+      cdn_frontdoor_secret_id = null
     })
   }))
   default = {}
+
+  validation {
+    condition = alltrue([
+      for cd_name, _ in var.custom_domains :
+      try(
+        length(regex("[a-zA-Z-]*[-][a-zA-Z-]*", cd_name)) > 0
+      , false) &&
+      length(cd_name) >= 2 && length(cd_name) < 260
+
+    ])
+    error_message = "custom domain keys must be between 2 and 260 characters in length, must begin with a letter or number, end with a letter or number and contain only letters, numbers and hyphens"
+  }
 }
 
 # ------------------
@@ -125,9 +146,9 @@ variable "routes" {
     origin_group_short_name = string
     origins_short_names     = list(string)
 
-    forwarding_protocol = string
-    patterns_to_match   = list(string)
-    supported_protocols = list(string)
+    forwarding_protocol = optional(string, "HttpsOnly")
+    patterns_to_match   = optional(list(string), ["/*"])
+    supported_protocols = optional(list(string), ["Http", "Https"])
     cache = optional(object({
       query_string_caching_behavior = optional(string, "IgnoreQueryString")
       query_strings                 = optional(string)

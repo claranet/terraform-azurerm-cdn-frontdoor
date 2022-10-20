@@ -75,6 +75,8 @@ resource "azurerm_cdn_frontdoor_origin" "frontdoor_origin" {
 resource "azurerm_cdn_frontdoor_custom_domain" "frontdoor_custom_domain" {
   for_each = var.custom_domains
 
+  # depends_on = [azurerm_cdn_frontdoor_route.frontdoor_custom_route] # do not forget to add azurerm_cdn_frontdoor_security_policy as well once it has been settled down
+
   name                     = coalesce(each.value.custom_name, azurecaf_name.frontdoor_custom_domain[each.key].result)
   cdn_frontdoor_profile_id = azurerm_cdn_frontdoor_profile.frontdoor_profile.id
   dns_zone_id              = each.value.dns_zone_id
@@ -95,9 +97,32 @@ locals {
     azurerm_cdn_frontdoor_origin.frontdoor_origin[origin].id
     ]
   }
-}
-resource "azurerm_cdn_frontdoor_route" "frontdoor_custom_route" {
 
+  custom_domains_per_route = {
+    for route_name, route_meta in var.routes : route_name => [
+      for cd in route_meta.custom_domains_short_names :
+      azurerm_cdn_frontdoor_custom_domain.frontdoor_custom_domain[cd].id
+    ]
+  }
+
+  _custom_domain_per_endpoint = flatten([
+    for route_name, route_meta in var.routes : [
+      for cd in route_meta.custom_domains_short_names : {
+        custom_domain = cd
+        endpoint      = route_meta.endpoint_short_name
+      }
+    ]
+  ])
+
+  custom_domain_records_cname_per_endpoint = {
+    for cdpe in local._custom_domain_per_endpoint : format("%s___%s", var.custom_domains[cdpe.custom_domain].host_name, azurerm_cdn_frontdoor_endpoint.frontdoor_endpoint[cdpe.endpoint].host_name) => {
+      validation_cname_record_name  = var.custom_domains[cdpe.custom_domain].host_name
+      validation_cname_record_value = azurerm_cdn_frontdoor_endpoint.frontdoor_endpoint[cdpe.endpoint].host_name
+    }
+  }
+}
+
+resource "azurerm_cdn_frontdoor_route" "frontdoor_custom_route" {
   for_each = var.routes
 
   name    = coalesce(each.value.custom_name, azurecaf_name.frontdoor_route[each.key].result)
@@ -106,7 +131,6 @@ resource "azurerm_cdn_frontdoor_route" "frontdoor_custom_route" {
   cdn_frontdoor_endpoint_id     = azurerm_cdn_frontdoor_endpoint.frontdoor_endpoint[each.value.endpoint_short_name].id
   cdn_frontdoor_origin_group_id = azurerm_cdn_frontdoor_origin_group.frontdoor_origin_group[each.value.origin_group_short_name].id
 
-  #cdn_frontdoor_origin_ids = [azurerm_cdn_frontdoor_origin.frontdoor_origin[each.value.origins_short_names[*]].id]
   cdn_frontdoor_origin_ids = local.origins_names_per_route[each.key]
 
   forwarding_protocol = each.value.forwarding_protocol
@@ -123,7 +147,8 @@ resource "azurerm_cdn_frontdoor_route" "frontdoor_custom_route" {
     }
   }
 
-  #cdn_frontdoor_custom_domain_ids = [azurerm_cdn_frontdoor_custom_domain.frontdoor_custom_domain[each.value.custom_domains_short_names[*].id]]
+  cdn_frontdoor_custom_domain_ids = local.custom_domains_per_route[each.key]
+
   cdn_frontdoor_origin_path = each.value.cdn_frontdoor_origin_path
   #cdn_frontdoor_rule_set_ids      = [azurerm_cdn_frontdoor_rule_set.frontdoor_rule_set[each.value.rule_sets_short_names[*]].id]
 
