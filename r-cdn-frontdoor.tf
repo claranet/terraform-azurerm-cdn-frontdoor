@@ -75,8 +75,6 @@ resource "azurerm_cdn_frontdoor_origin" "frontdoor_origin" {
 resource "azurerm_cdn_frontdoor_custom_domain" "frontdoor_custom_domain" {
   for_each = var.custom_domains
 
-  # depends_on = [azurerm_cdn_frontdoor_route.frontdoor_custom_route] # do not forget to add azurerm_cdn_frontdoor_security_policy as well once it has been settled down
-
   name                     = coalesce(each.value.custom_name, azurecaf_name.frontdoor_custom_domain[each.key].result)
   cdn_frontdoor_profile_id = azurerm_cdn_frontdoor_profile.frontdoor_profile.id
   dns_zone_id              = each.value.dns_zone_id
@@ -89,56 +87,7 @@ resource "azurerm_cdn_frontdoor_custom_domain" "frontdoor_custom_domain" {
   }
 }
 
-
-# TODO - Rework
-locals {
-  origins_names_per_route = { for route_name, route_meta in var.routes : route_name => [
-    for origin in route_meta.origins_short_names :
-    azurerm_cdn_frontdoor_origin.frontdoor_origin[origin].id
-    ]
-  }
-
-  custom_domains_per_route = {
-    for route_name, route_meta in var.routes : route_name => [
-      for cd in route_meta.custom_domains_short_names :
-      azurerm_cdn_frontdoor_custom_domain.frontdoor_custom_domain[cd].id
-    ]
-  }
-
-  // each object contains
-  // the custom_domain key
-  // the endpoint key
-  // used for output purposes
-  _custom_domain_per_endpoint = flatten([
-    for route_name, route_meta in var.routes : [
-      for cd in route_meta.custom_domains_short_names : {
-        custom_domain = cd
-        endpoint      = route_meta.endpoint_short_name
-      }
-    ]
-  ])
-
-  // A custom domain and its subdomains can only be associated with a single endpoint at a time
-  // There could be possibility to have N endpoints to one custom domain
-  // that's why we create map's key according to both these parameter like
-  // www.temporairedmp.infogreffe.fr___cfde-app-infogreffe-prod-default-g8e2ezd6e0exhmaf.z01.azurefd.net
-  // the "___" part represents the split
-  // so at the end we can wee it as
-  //
-  // the custom domain "www.temporairedmp.infogreffe.fr"
-  // is pointing to cfde-app-infogreffe-prod-default-g8e2ezd6e0exhmaf.z01.azurefd.net
-  // thus (to be added in the DNS server (custom or managed one via Azure):
-  // record name = www.temporairedmp.infogreffe.fr
-  // record_value = cfde-app-infogreffe-prod-default-g8e2ezd6e0exhmaf.z01.azurefd.net
-  custom_domain_records_cname_per_endpoint = {
-    for cdpe in local._custom_domain_per_endpoint : format("%s___%s", var.custom_domains[cdpe.custom_domain].host_name, azurerm_cdn_frontdoor_endpoint.frontdoor_endpoint[cdpe.endpoint].host_name) => {
-      validation_cname_record_name  = var.custom_domains[cdpe.custom_domain].host_name
-      validation_cname_record_value = azurerm_cdn_frontdoor_endpoint.frontdoor_endpoint[cdpe.endpoint].host_name
-    }
-  }
-}
-
-resource "azurerm_cdn_frontdoor_route" "frontdoor_custom_route" {
+resource "azurerm_cdn_frontdoor_route" "frontdoor_route" {
   for_each = var.routes
 
   name    = coalesce(each.value.custom_name, azurecaf_name.frontdoor_route[each.key].result)
@@ -163,16 +112,32 @@ resource "azurerm_cdn_frontdoor_route" "frontdoor_custom_route" {
     }
   }
 
-  cdn_frontdoor_custom_domain_ids = local.custom_domains_per_route[each.key]
-
-  cdn_frontdoor_origin_path = each.value.cdn_frontdoor_origin_path
-  #cdn_frontdoor_rule_set_ids      = [azurerm_cdn_frontdoor_rule_set.frontdoor_rule_set[each.value.rule_sets_short_names[*]].id]
+  cdn_frontdoor_custom_domain_ids = try(local.custom_domains_per_route[each.key], [])
+  cdn_frontdoor_origin_path       = each.value.cdn_frontdoor_origin_path
+  cdn_frontdoor_rule_set_ids      = try(local.rule_sets_per_route[each.key], [])
 
   https_redirect_enabled = each.value.https_redirect_enabled
   link_to_default_domain = each.value.link_to_default_domain
 }
 
+resource "azurerm_cdn_frontdoor_rule_set" "frontdoor_rule_set" {
+  for_each = var.rule_sets
 
+  name                     = coalesce(each.value.custom_name, azurecaf_name.frontdoor_rule_set[each.key].result)
+  cdn_frontdoor_profile_id = azurerm_cdn_frontdoor_profile.frontdoor_profile.id
+}
+
+# resource "azurerm_cdn_frontdoor_rule" "example" {
+#   depends_on = [azurerm_cdn_frontdoor_origin_group.frontdoor_origin_group, azurerm_cdn_frontdoor_origin.frontdoor_origin]
+
+#   name                      = "examplerule"
+#   cdn_frontdoor_rule_set_id = azurerm_cdn_frontdoor_rule_set.example.id
+#   order                     = 1
+#   behavior_on_match         = "Continue"
+# }
+
+
+# NOT NEEDED ?
 # resource "azurerm_cdn_frontdoor_custom_domain_association" "frontdoor_custom_domain_association" {
 #   for_each = var.custom_domains.id
 

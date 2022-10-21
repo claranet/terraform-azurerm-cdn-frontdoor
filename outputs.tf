@@ -48,6 +48,12 @@
 #   value       = [for ip in jsondecode(data.external.frontdoor_ips.result.firstpartyPrefixes) : ip if length(regexall(":", ip)) > 0]
 # }
 
+
+
+
+
+
+
 output "custom_domains" {
   value       = azurerm_cdn_frontdoor_custom_domain.frontdoor_custom_domain[*]
   description = "Custom domains metadata"

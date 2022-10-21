@@ -153,23 +153,25 @@ module "frontdoor_standard" {
 | [azurecaf_name.frontdoor_origin_group](https://registry.terraform.io/providers/aztfmod/azurecaf/latest/docs/resources/name) | resource |
 | [azurecaf_name.frontdoor_profile](https://registry.terraform.io/providers/aztfmod/azurecaf/latest/docs/resources/name) | resource |
 | [azurecaf_name.frontdoor_route](https://registry.terraform.io/providers/aztfmod/azurecaf/latest/docs/resources/name) | resource |
+| [azurecaf_name.frontdoor_rule_set](https://registry.terraform.io/providers/aztfmod/azurecaf/latest/docs/resources/name) | resource |
 | [azurerm_cdn_frontdoor_custom_domain.frontdoor_custom_domain](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/cdn_frontdoor_custom_domain) | resource |
 | [azurerm_cdn_frontdoor_endpoint.frontdoor_endpoint](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/cdn_frontdoor_endpoint) | resource |
 | [azurerm_cdn_frontdoor_origin.frontdoor_origin](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/cdn_frontdoor_origin) | resource |
 | [azurerm_cdn_frontdoor_origin_group.frontdoor_origin_group](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/cdn_frontdoor_origin_group) | resource |
 | [azurerm_cdn_frontdoor_profile.frontdoor_profile](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/cdn_frontdoor_profile) | resource |
-| [azurerm_cdn_frontdoor_route.frontdoor_custom_route](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/cdn_frontdoor_route) | resource |
+| [azurerm_cdn_frontdoor_route.frontdoor_route](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/cdn_frontdoor_route) | resource |
+| [azurerm_cdn_frontdoor_rule_set.frontdoor_rule_set](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/cdn_frontdoor_rule_set) | resource |
 
 ## Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| client\_name | Client name/account used in naming | `string` | n/a | yes |
+| client\_name | Client name/account used in naming. | `string` | n/a | yes |
 | custom\_diagnostic\_settings\_name | Custom name of the diagnostics settings, name will be 'default' if not set. | `string` | `"default"` | no |
-| custom\_domains | Manages CDN FrontDoor Custom Domains | <pre>map(object({<br>    #route_name = optional(string) TODO ROUTE ASSOCIATION<br>    custom_name = optional(string)<br>    host_name   = string<br>    dns_zone_id = optional(string)<br>    tls = object({<br>      certificate_type        = optional(string, "ManagedCertificate")<br>      minimum_tls_version     = optional(string, "TLS12")<br>      cdn_frontdoor_secret_id = optional(string)<br>    })<br>  }))</pre> | `{}` | no |
+| custom\_domains | Manages CDN FrontDoor Custom Domains. | <pre>map(object({<br>    custom_name = optional(string)<br>    host_name   = string<br>    dns_zone_id = optional(string)<br>    tls = optional(object({<br>      certificate_type        = optional(string, "ManagedCertificate")<br>      minimum_tls_version     = optional(string, "TLS12")<br>      cdn_frontdoor_secret_id = optional(string)<br>    }), {})<br>  }))</pre> | `{}` | no |
 | default\_tags\_enabled | Option to enable or disable default tags | `bool` | `true` | no |
-| endpoints | Manages CDN FrontDoor Endpoints | <pre>map(object({<br>    custom_name = optional(string)<br>    enabled     = optional(bool, true)<br>  }))</pre> | `{}` | no |
-| environment | Project environment | `string` | n/a | yes |
+| endpoints | Manages CDN FrontDoor Endpoints. | <pre>map(object({<br>    custom_name = optional(string)<br>    enabled     = optional(bool, true)<br>  }))</pre> | `{}` | no |
+| environment | Project environment. | `string` | n/a | yes |
 | extra\_tags | Extra tags to add | `map(string)` | `{}` | no |
 | frontdoor\_profile\_name | Specifies the name of the FrontDoor Profile. | `string` | `""` | no |
 | logs\_categories | Log categories to send to destinations. | `list(string)` | `null` | no |
@@ -178,18 +180,23 @@ module "frontdoor_standard" {
 | logs\_retention\_days | Number of days to keep logs on storage account | `number` | `30` | no |
 | name\_prefix | Optional prefix for the generated name | `string` | `""` | no |
 | name\_suffix | Optional suffix for the generated name | `string` | `""` | no |
-| origin\_groups | Manages CDN FrontDoor Origin Groups | <pre>map(object({<br>    custom_name                                               = optional(string)<br>    session_affinity_enabled                                  = optional(bool, true)<br>    restore_traffic_time_to_healed_or_new_endpoint_in_minutes = optional(number, 10)<br>    health_probe = optional(object({<br>      interval_in_seconds = number<br>      path                = string<br>      protocol            = string<br>      request_type        = string<br>    }))<br>    load_balancing = object({<br>      additional_latency_in_milliseconds = optional(number, 50)<br>      sample_size                        = optional(number, 4)<br>      successful_samples_required        = optional(number, 3)<br>    })<br>  }))</pre> | `{}` | no |
-| origins | Manages CDN FrontDoor Origins | <pre>map(object({<br>    custom_name                    = optional(string)<br>    origin_group_short_name        = string<br>    enabled                        = optional(bool, true)<br>    certificate_name_check_enabled = optional(bool, true)<br><br>    host_name          = string<br>    http_port          = optional(number, 80)<br>    https_port         = optional(number, 443)<br>    origin_host_header = optional(string)<br>    priority           = optional(number, 1)<br>    weight             = optional(number, 1)<br><br>    private_link = optional(object({<br>      request_message        = optional(string)<br>      target_type            = optional(string)<br>      location               = string<br>      private_link_target_id = string<br>    }))<br>  }))</pre> | `{}` | no |
-| resource\_group\_name | Resource group name | `string` | n/a | yes |
+| origin\_groups | Manages CDN FrontDoor Origin Groups. | <pre>map(object({<br>    custom_name                                               = optional(string)<br>    session_affinity_enabled                                  = optional(bool, true)<br>    restore_traffic_time_to_healed_or_new_endpoint_in_minutes = optional(number, 10)<br>    health_probe = optional(object({<br>      interval_in_seconds = number<br>      path                = string<br>      protocol            = string<br>      request_type        = string<br>    }))<br>    load_balancing = optional(object({<br>      additional_latency_in_milliseconds = optional(number, 50)<br>      sample_size                        = optional(number, 4)<br>      successful_samples_required        = optional(number, 3)<br>    }), {})<br>  }))</pre> | `{}` | no |
+| origins | Manages CDN FrontDoor Origins. | <pre>map(object({<br>    custom_name                    = optional(string)<br>    origin_group_short_name        = string<br>    enabled                        = optional(bool, true)<br>    certificate_name_check_enabled = optional(bool, true)<br><br>    host_name          = string<br>    http_port          = optional(number, 80)<br>    https_port         = optional(number, 443)<br>    origin_host_header = optional(string)<br>    priority           = optional(number, 1)<br>    weight             = optional(number, 1)<br><br>    private_link = optional(object({<br>      request_message        = optional(string)<br>      target_type            = optional(string)<br>      location               = string<br>      private_link_target_id = string<br>    }))<br>  }))</pre> | `{}` | no |
+| resource\_group\_name | Resource group name. | `string` | n/a | yes |
 | response\_timeout\_seconds | Specifies the maximum response timeout in seconds. Possible values are between `16` and `240` seconds (inclusive). | `number` | `120` | no |
-| routes | Manages a CDN FrontDoor Routes | <pre>map(object({<br>    custom_name = optional(string)<br>    enabled     = optional(bool, true)<br><br>    endpoint_short_name     = string<br>    origin_group_short_name = string<br>    origins_short_names     = list(string)<br><br>    forwarding_protocol = string<br>    patterns_to_match   = list(string)<br>    supported_protocols = list(string)<br>    cache = optional(object({<br>      query_string_caching_behavior = optional(string, "IgnoreQueryString")<br>      query_strings                 = optional(string)<br>      compression_enabled           = optional(bool, false)<br>      content_types_to_compress     = optional(list(string))<br>    }))<br><br>    custom_domains_short_names = optional(list(string))<br>    cdn_frontdoor_origin_path  = optional(string)<br>    rule_sets_short_names      = optional(list(string))<br><br>    https_redirect_enabled = optional(bool, true)<br>    link_to_default_domain = optional(bool, true)<br>  }))</pre> | `{}` | no |
+| routes | Manages a CDN FrontDoor Routes. | <pre>map(object({<br>    custom_name = optional(string)<br>    enabled     = optional(bool, true)<br><br>    endpoint_short_name     = string<br>    origin_group_short_name = string<br>    origins_short_names     = list(string)<br><br>    forwarding_protocol = optional(string, "HttpsOnly")<br>    patterns_to_match   = optional(list(string), ["/*"])<br>    supported_protocols = optional(list(string), ["Http", "Https"])<br>    cache = optional(object({<br>      query_string_caching_behavior = optional(string, "IgnoreQueryString")<br>      query_strings                 = optional(string)<br>      compression_enabled           = optional(bool, false)<br>      content_types_to_compress     = optional(list(string))<br>    }))<br><br>    custom_domains_short_names = optional(list(string))<br>    cdn_frontdoor_origin_path  = optional(string)<br>    rule_sets_short_names      = optional(list(string))<br><br>    https_redirect_enabled = optional(bool, true)<br>    link_to_default_domain = optional(bool, true)<br>  }))</pre> | `{}` | no |
+| rule\_sets | Manages CDN FrontDoor Rule Sets. | <pre>map(object({<br>    custom_name = optional(string)<br>    rules = optional(map(object({<br>    })))<br>  }))</pre> | `{}` | no |
 | sku\_name | Specifies the SKU for this CDN FrontDoor Profile. Possible values include `Standard_AzureFrontDoor` and `Premium_AzureFrontDoor`. | `string` | `"Standard_AzureFrontDoor"` | no |
-| stack | Project stack name | `string` | n/a | yes |
+| stack | Project stack name. | `string` | n/a | yes |
 | use\_caf\_naming | Use the Azure CAF naming provider to generate default resource name. `custom_name` override this if set. Legacy default name is used if this is set to `false`. | `bool` | `true` | no |
 
 ## Outputs
 
-No outputs.
+| Name | Description |
+|------|-------------|
+| custom\_domains | Custom domains metadata |
+| custom\_domains\_per\_endpoint\_validations | CNAME Records to add for each custom domain and endpoint association |
+| custom\_domains\_ssl\_validations | n/a |
 <!-- END_TF_DOCS -->
 ## Related documentation
 

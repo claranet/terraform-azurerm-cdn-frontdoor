@@ -1,22 +1,22 @@
 #---------
 # Common
 variable "client_name" {
-  description = "Client name/account used in naming"
+  description = "Client name/account used in naming."
   type        = string
 }
 
 variable "environment" {
-  description = "Project environment"
+  description = "Project environment."
   type        = string
 }
 
 variable "stack" {
-  description = "Project stack name"
+  description = "Project stack name."
   type        = string
 }
 
 variable "resource_group_name" {
-  description = "Resource group name"
+  description = "Resource group name."
   type        = string
 }
 
@@ -37,7 +37,7 @@ variable "response_timeout_seconds" {
 # ------------------
 # FrontDoor Endpoint
 variable "endpoints" {
-  description = "Manages CDN FrontDoor Endpoints"
+  description = "Manages CDN FrontDoor Endpoints."
   type = map(object({
     custom_name = optional(string)
     enabled     = optional(bool, true)
@@ -48,7 +48,7 @@ variable "endpoints" {
 # ------------------
 # FrontDoor Origin Groups
 variable "origin_groups" {
-  description = "Manages CDN FrontDoor Origin Groups"
+  description = "Manages CDN FrontDoor Origin Groups."
   type = map(object({
     custom_name                                               = optional(string)
     session_affinity_enabled                                  = optional(bool, true)
@@ -63,12 +63,7 @@ variable "origin_groups" {
       additional_latency_in_milliseconds = optional(number, 50)
       sample_size                        = optional(number, 4)
       successful_samples_required        = optional(number, 3)
-      }), {
-      additional_latency_in_milliseconds = 50
-      sample_size                        = 4
-      successful_samples_required        = 3
-      }
-    )
+    }), {})
   }))
   default = {}
 }
@@ -76,7 +71,7 @@ variable "origin_groups" {
 # ------------------
 # FrontDoor Origins
 variable "origins" {
-  description = "Manages CDN FrontDoor Origins"
+  description = "Manages CDN FrontDoor Origins."
   type = map(object({
     custom_name                    = optional(string)
     origin_group_short_name        = string
@@ -103,41 +98,36 @@ variable "origins" {
 # ------------------
 # FrontDoor Custom Domains
 variable "custom_domains" {
-  description = "Manages CDN FrontDoor Custom Domains"
+  description = "Manages CDN FrontDoor Custom Domains."
   type = map(object({
-    #route_name = optional(string) TODO ROUTE ASSOCIATION
     custom_name = optional(string)
     host_name   = string
     dns_zone_id = optional(string)
     tls = optional(object({
-      certificate_type        = string
-      minimum_tls_version     = string
-      cdn_frontdoor_secret_id = string
-      }), {
-      certificate_type        = "ManagedCertificate"
-      minimum_tls_version     = "TLS12"
-      cdn_frontdoor_secret_id = null
-    })
+      certificate_type        = optional(string, "ManagedCertificate")
+      minimum_tls_version     = optional(string, "TLS12")
+      cdn_frontdoor_secret_id = optional(string)
+    }), {})
   }))
   default = {}
 
-  validation {
-    condition = alltrue([
-      for cd_name, _ in var.custom_domains :
-      try(
-        length(regex("[a-zA-Z-]*[-][a-zA-Z-]*", cd_name)) > 0
-      , false) &&
-      length(cd_name) >= 2 && length(cd_name) < 260
+  # validation {
+  #   condition = alltrue([
+  #     for cd_name, _ in var.custom_domains :
+  #     try(
+  #       length(regex("[a-zA-Z-]*[-][a-zA-Z-]*", cd_name)) > 0
+  #     , false) &&
+  #     length(cd_name) >= 2 && length(cd_name) < 260
 
-    ])
-    error_message = "custom domain keys must be between 2 and 260 characters in length, must begin with a letter or number, end with a letter or number and contain only letters, numbers and hyphens"
-  }
+  #   ])
+  #   error_message = "custom domain keys must be between 2 and 260 characters in length, must begin with a letter or number, end with a letter or number and contain only letters, numbers and hyphens"
+  # }
 }
 
 # ------------------
 # FrontDoor Routes
 variable "routes" {
-  description = "Manages a CDN FrontDoor Routes"
+  description = "Manages a CDN FrontDoor Routes."
   type = map(object({
     custom_name = optional(string)
     enabled     = optional(bool, true)
@@ -165,6 +155,19 @@ variable "routes" {
   }))
   default = {}
 }
+
+# ------------------
+# FrontDoor Rule Sets
+variable "rule_sets" {
+  description = "Manages CDN FrontDoor Rule Sets."
+  type = map(object({
+    custom_name = optional(string)
+    rules = optional(map(object({
+    })))
+  }))
+  default = {}
+}
+
 
 # ------------------
 # FrontDoor WAF Policy
