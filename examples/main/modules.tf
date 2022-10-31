@@ -27,40 +27,8 @@ module "logs" {
   resource_group_name = module.rg.resource_group_name
 }
 
-module "frontdoor_waf" {
-  source  = "claranet/front-door/azurerm//modules/waf-policy"
-  version = "x.x.x"
-
-  client_name = var.client_name
-  environment = var.environment
-  stack       = var.stack
-
-  resource_group_name = module.rg.resource_group_name
-
-  managed_rules = [
-    {
-      type    = "DefaultRuleSet"
-      version = "1.0"
-      overrides = [{
-        rule_group_name = "PHP"
-        rules = [{
-          action  = "Block"
-          enabled = false
-          rule_id = 933111
-        }]
-      }]
-    },
-    {
-      type    = "Microsoft_BotManagerRuleSet"
-      version = "1.0"
-    },
-  ]
-
-  # Custom error page 
-  #custom_block_response_body = filebase64("${path.module}/files/403.html")
-}
-
 module "frontdoor_standard" {
+
   source  = "claranet/cdn-frontdoor/azurerm"
   version = "x.x.x"
 
@@ -70,10 +38,24 @@ module "frontdoor_standard" {
 
   resource_group_name = module.rg.resource_group_name
 
-  # frontdoor_waf_policy_id = module.front_door_waf.waf_policy_id
+  logs_destinations_ids = [
+    module.logs.log_analytics_workspace_id,
+    module.logs.logs_storage_account_id
+  ]
 
-  origin_groups = {
-    contoso = {
+  endpoints = [
+    {
+      name = "web"
+    },
+    {
+      name    = "azure"
+      enabled = false
+    }
+  ]
+
+  origin_groups = [
+    {
+      name = "contoso"
       health_probe = {
         interval_in_seconds = 250
         path                = "/"
@@ -83,20 +65,93 @@ module "frontdoor_standard" {
       load_balancing = {
         successful_samples_required = 1
       }
+    },
+    {
+      name = "contoso2"
+      health_probe = {
+        interval_in_seconds = 250
+        path                = "/"
+        protocol            = "Https"
+        request_type        = "GET"
+      }
     }
-  }
+  ]
 
-  origins = {
-    contoso-com = {
-      origin_group_short_name        = "contoso"
+  origins = [
+    {
+      name                           = "web"
+      origin_group_name              = "contoso"
       certificate_name_check_enabled = false
       host_name                      = "www.contoso.com"
+    },
+    {
+      name                           = "azure"
+      origin_group_name              = "contoso2"
+      certificate_name_check_enabled = false
+      host_name                      = "azure.contoso.com"
     }
-  }
+  ]
 
-  logs_destinations_ids = [
-    module.logs.log_analytics_workspace_id,
-    module.logs.logs_storage_account_id
+  custom_domains = [
+    {
+      name      = "www"
+      host_name = "www.contoso.com"
+    }
+  ]
+
+  routes = [
+    {
+      name                = "route66"
+      endpoint_name       = "web"
+      origin_group_name   = "contoso"
+      origins_names       = ["web", "azure"]
+      forwarding_protocol = "HttpsOnly"
+      patterns_to_match   = ["/*"]
+      supported_protocols = ["Http", "Https"]
+      #custom_domains_names = ["max"]
+      rule_sets_names = ["my_rule_set", "my_rule_set2"]
+    },
+    {
+      name                = "route2"
+      endpoint_name       = "azure"
+      origin_group_name   = "contoso2"
+      origins_names       = ["web"]
+      forwarding_protocol = "HttpsOnly"
+      patterns_to_match   = ["/contoso"]
+      supported_protocols = ["Http", "Https"]
+      #custom_domains_names = ["max"]
+      rule_sets_names = ["my_rule_set", "my_rule_set2"]
+    }
+  ]
+
+  rule_sets = [
+    {
+      name                 = "my_rule_set"
+      custom_resource_name = "custom_rule"
+      rules = [
+        {
+          name                 = "redirect"
+          custom_resource_name = "myrulename"
+          order                = 1
+          actions = {
+            url_rewrite_action = {
+              source_pattern = "/"
+              destination    = "/contoso"
+            }
+          }
+          conditions = {
+            is_device_condition = {
+              operator     = "Equal"
+              match_values = ["Desktop"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      name                 = "my_rule_set2"
+      custom_resource_name = "custom_rule2"
+    }
   ]
 
   extra_tags = {

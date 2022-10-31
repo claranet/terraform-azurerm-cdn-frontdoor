@@ -38,19 +38,21 @@ variable "response_timeout_seconds" {
 # FrontDoor Endpoint
 variable "endpoints" {
   description = "Manages CDN FrontDoor Endpoints."
-  type = map(object({
-    custom_name = optional(string)
-    enabled     = optional(bool, true)
+  type = list(object({
+    name                 = string
+    custom_resource_name = optional(string)
+    enabled              = optional(bool, true)
   }))
-  default = {}
+  default = []
 }
 
 # ------------------
 # FrontDoor Origin Groups
 variable "origin_groups" {
   description = "Manages CDN FrontDoor Origin Groups."
-  type = map(object({
-    custom_name                                               = optional(string)
+  type = list(object({
+    name                                                      = string
+    custom_resource_name                                      = optional(string)
     session_affinity_enabled                                  = optional(bool, true)
     restore_traffic_time_to_healed_or_new_endpoint_in_minutes = optional(number, 10)
     health_probe = optional(object({
@@ -65,16 +67,17 @@ variable "origin_groups" {
       successful_samples_required        = optional(number, 3)
     }), {})
   }))
-  default = {}
+  default = []
 }
 
 # ------------------
 # FrontDoor Origins
 variable "origins" {
   description = "Manages CDN FrontDoor Origins."
-  type = map(object({
-    custom_name                    = optional(string)
-    origin_group_short_name        = string
+  type = list(object({
+    name                           = string
+    custom_resource_name           = optional(string)
+    origin_group_name              = string
     enabled                        = optional(bool, true)
     certificate_name_check_enabled = optional(bool, true)
 
@@ -92,49 +95,49 @@ variable "origins" {
       private_link_target_id = string
     }))
   }))
-  default = {}
+  default = []
 }
 
 # ------------------
 # FrontDoor Custom Domains
 variable "custom_domains" {
   description = "Manages CDN FrontDoor Custom Domains."
-  type = map(object({
-    custom_name = optional(string)
-    host_name   = string
-    dns_zone_id = optional(string)
+  type = list(object({
+    name                 = string
+    custom_resource_name = optional(string)
+    host_name            = string
+    dns_zone_id          = optional(string)
     tls = optional(object({
       certificate_type        = optional(string, "ManagedCertificate")
       minimum_tls_version     = optional(string, "TLS12")
       cdn_frontdoor_secret_id = optional(string)
     }), {})
   }))
-  default = {}
+  default = []
 
-  # validation {
-  #   condition = alltrue([
-  #     for cd_name, _ in var.custom_domains :
-  #     try(
-  #       length(regex("[a-zA-Z-]*[-][a-zA-Z-]*", cd_name)) > 0
-  #     , false) &&
-  #     length(cd_name) >= 2 && length(cd_name) < 260
-
-  #   ])
-  #   error_message = "custom domain keys must be between 2 and 260 characters in length, must begin with a letter or number, end with a letter or number and contain only letters, numbers and hyphens"
-  # }
+  validation {
+    condition = alltrue([
+      for custom_domain in var.custom_domains :
+      can(regex("^[a-zA-Z0-9][0-9A-Za-z-]*[a-zA-Z0-9]$", custom_domain.name)) &&
+      length(custom_domain.name) >= 2 &&
+      length(custom_domain.name) <= 260
+    ])
+    error_message = "Custom domain names must be between 2 and 260 characters in length, must begin with a letter or number, end with a letter or number and contain only letters, numbers and hyphens."
+  }
 }
 
 # ------------------
 # FrontDoor Routes
 variable "routes" {
   description = "Manages a CDN FrontDoor Routes."
-  type = map(object({
-    custom_name = optional(string)
-    enabled     = optional(bool, true)
+  type = list(object({
+    name                 = string
+    custom_resource_name = optional(string)
+    enabled              = optional(bool, true)
 
-    endpoint_short_name     = string
-    origin_group_short_name = string
-    origins_short_names     = list(string)
+    endpoint_name     = string
+    origin_group_name = string
+    origins_names     = list(string)
 
     forwarding_protocol = optional(string, "HttpsOnly")
     patterns_to_match   = optional(list(string), ["/*"])
@@ -146,31 +149,188 @@ variable "routes" {
       content_types_to_compress     = optional(list(string))
     }))
 
-    custom_domains_short_names = optional(list(string))
-    cdn_frontdoor_origin_path  = optional(string)
-    rule_sets_short_names      = optional(list(string))
+    custom_domains_names      = optional(list(string))
+    cdn_frontdoor_origin_path = optional(string)
+    rule_sets_names           = optional(list(string))
 
     https_redirect_enabled = optional(bool, true)
     link_to_default_domain = optional(bool, true)
   }))
-  default = {}
+  default = []
 }
 
 # ------------------
-# FrontDoor Rule Sets
+# FrontDoor Rule Sets + Rules
 variable "rule_sets" {
-  description = "Manages CDN FrontDoor Rule Sets."
-  type = map(object({
-    custom_name = optional(string)
-    rules = optional(map(object({
+  description = "Manages CDN FrontDoor Rule Sets and associated Rules."
+  type = list(object({
+    name                 = string
+    custom_resource_name = optional(string)
+    rules = optional(list(object({
+      name                 = string
+      custom_resource_name = optional(string)
+      order                = number
+      behavior_on_match    = optional(string, "Continue")
+
+      actions = object({
+        url_rewrite_action = optional(object({
+          source_pattern          = optional(string)
+          destination             = optional(string)
+          preserve_unmatched_path = optional(bool, false)
+        }))
+        url_redirect_action = optional(object({
+          redirect_type        = string
+          destination_hostname = string
+          redirect_protocol    = optional(string, "MatchRequest")
+          destination_path     = optional(string, "")
+          query_string         = optional(string, "")
+          destination_fragment = optional(string, "")
+        }))
+        route_configuration_override_action = optional(object({
+          cache_duration                = optional(string, "1.12:00:00")
+          cdn_frontdoor_origin_group_id = optional(string)
+          forwarding_protocol           = optional(string, "MatchRequest")
+          query_string_caching_behavior = optional(string, "IgnoreQueryString")
+          query_string_parameters       = optional(list(string))
+          compression_enabled           = optional(bool, false)
+          cache_behavior                = optional(string, "HonorOrigin")
+        }))
+        request_header_action = optional(object({
+          header_action = string
+          header_name   = string
+          value         = optional(string)
+        }))
+        response_header_action = optional(object({
+          header_action = string
+          header_name   = string
+          value         = optional(string)
+        }))
+      })
+      conditions = optional(object({
+        remote_address_condition = optional(object({
+          operator         = string
+          negate_condition = optional(bool, false)
+          match_values     = optional(list(string))
+        }))
+        request_method_condition = optional(object({
+          match_values     = list(string)
+          operator         = optional(string, "Equal")
+          negate_condition = optional(bool, false)
+        }))
+        query_string_condition = optional(object({
+          operator         = string
+          negate_condition = optional(bool, false)
+          match_values     = optional(list(string))
+          transforms       = optional(list(string), ["Lowercase"])
+        }))
+        post_args_condition = optional(object({
+          post_args_name   = string
+          operator         = string
+          negate_condition = optional(bool, false)
+          match_values     = optional(list(string))
+          transforms       = optional(list(string), ["Lowercase"])
+        }))
+        request_uri_condition = optional(object({
+          operator         = string
+          negate_condition = optional(bool, false)
+          match_values     = optional(list(string))
+          transforms       = optional(list(string), ["Lowercase"])
+        }))
+        request_header_condition = optional(object({
+          header_name      = string
+          operator         = string
+          negate_condition = optional(bool, false)
+          match_values     = optional(list(string))
+          transforms       = optional(list(string), ["Lowercase"])
+        }))
+        request_body_condition = optional(object({
+          operator         = string
+          match_values     = list(string)
+          negate_condition = optional(bool, false)
+          transforms       = optional(list(string), ["Lowercase"])
+        }))
+        request_scheme_condition = optional(object({
+          operator         = optional(string, "Equal")
+          negate_condition = optional(bool, false)
+          match_values     = optional(string, "HTTP")
+        }))
+        url_path_condition = optional(object({
+          operator         = string
+          negate_condition = optional(bool, false)
+          match_values     = optional(list(string))
+          transforms       = optional(list(string), ["Lowercase"])
+        }))
+        url_file_extension_condition = optional(object({
+          operator         = string
+          negate_condition = optional(bool, false)
+          match_values     = list(string)
+          transforms       = optional(list(string), ["Lowercase"])
+        }))
+        url_filename_condition = optional(object({
+          operator         = string
+          match_values     = list(string)
+          negate_condition = optional(bool, false)
+          transforms       = optional(list(string), ["Lowercase"])
+        }))
+        http_version_condition = optional(object({
+          match_values     = list(string)
+          operator         = optional(string, "Equal")
+          negate_condition = optional(bool, false)
+        }))
+        cookies_condition = optional(object({
+          cookie_name      = string
+          operator         = string
+          negate_condition = optional(bool, false)
+          match_values     = optional(list(string))
+          transforms       = optional(list(string), ["Lowercase"])
+        }))
+        is_device_condition = optional(object({
+          operator         = optional(string, "Equal")
+          negate_condition = optional(bool, false)
+          match_values     = optional(list(string), ["Mobile"])
+        }))
+        socket_address_condition = optional(object({
+          operator         = string
+          negate_condition = optional(bool, false)
+          match_values     = optional(list(string))
+        }))
+        client_port_condition = optional(object({
+          operator         = string
+          negate_condition = optional(bool, false)
+          match_values     = optional(list(string))
+        }))
+        server_port_condition = optional(object({
+          operator         = string
+          match_values     = list(string)
+          negate_condition = optional(bool, false)
+        }))
+        host_name_condition = optional(object({
+          operator     = string
+          match_values = list(string)
+          transforms   = optional(list(string), ["Lowercase"])
+        }))
+        ssl_protocol_condition = optional(object({
+          match_values     = list(string)
+          operator         = optional(string, "Equal")
+          negate_condition = optional(bool, false)
+        }))
+      }))
     })))
   }))
-  default = {}
+  default = []
 }
-
 
 # ------------------
 # FrontDoor WAF Policy
+# variable "frontdoor_waf_policy_id" {
+#   description = "Frontdoor WAF Policy ID"
+#   type        = string
+#   default     = null
+# }
+
+
+# ------------------
+# FrontDoor Security Policy
 # variable "frontdoor_waf_policy_id" {
 #   description = "Frontdoor WAF Policy ID"
 #   type        = string
