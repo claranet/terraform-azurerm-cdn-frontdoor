@@ -190,7 +190,7 @@ module "frontdoor_standard" {
 | Name | Version |
 |------|---------|
 | azurecaf | ~> 1.1 |
-| azurerm | >= 3.29 |
+| azurerm | ~> 3.29 |
 
 ## Modules
 
