@@ -63,7 +63,7 @@ resource "azurerm_cdn_frontdoor_route" "frontdoor_route" {
   }
 
   cdn_frontdoor_custom_domain_ids = try(local.custom_domains_per_route[each.key], [])
-  cdn_frontdoor_origin_path       = each.value.cdn_frontdoor_origin_path
+  cdn_frontdoor_origin_path       = each.value.origin_path
   cdn_frontdoor_rule_set_ids      = try(local.rule_sets_per_route[each.key], [])
 
   https_redirect_enabled = each.value.https_redirect_enabled

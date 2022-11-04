@@ -40,6 +40,7 @@ variable "endpoints" {
   description = "Manages CDN FrontDoor Endpoints."
   type = list(object({
     name                 = string
+    prefix = optional(string, "")
     custom_resource_name = optional(string)
     enabled              = optional(bool, true)
   }))
@@ -150,7 +151,7 @@ variable "routes" {
     }))
 
     custom_domains_names      = optional(list(string))
-    cdn_frontdoor_origin_path = optional(string)
+    origin_path = optional(string, "/")
     rule_sets_names           = optional(list(string))
 
     https_redirect_enabled = optional(bool, true)
