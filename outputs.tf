@@ -3,21 +3,15 @@ output "frontdoor_profile_name" {
   value       = azurerm_cdn_frontdoor_profile.frontdoor_profile.name
 }
 
-
 output "frontdoor_profile_id" {
   description = "The ID of the FrontDoor Profile"
   value       = azurerm_cdn_frontdoor_profile.frontdoor_profile.id
 }
 
 output "frontdoor_endpoints" {
-  description = ""
+  description = "The IDs of the frontend endpoints."
   value       = azurerm_cdn_frontdoor_endpoint.frontdoor_endpoint
 }
-
-# output "frontdoor_frontend_endpoints" {
-#   description = "The IDs of the frontend endpoints."
-#   value       = azurerm_frontdoor.frontdoor.frontend_endpoints
-# }
 
 
 # output "custom_domains" {

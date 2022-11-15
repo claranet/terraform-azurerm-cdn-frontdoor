@@ -101,15 +101,15 @@ module "frontdoor_standard" {
 
   routes = [
     {
-      name                = "route66"
-      endpoint_name       = "web"
-      origin_group_name   = "contoso"
-      origins_names       = ["web", "azure"]
-      forwarding_protocol = "HttpsOnly"
-      patterns_to_match   = ["/*"]
-      supported_protocols = ["Http", "Https"]
-      #custom_domains_names = ["max"]
-      rule_sets_names = ["my_rule_set", "my_rule_set2"]
+      name                 = "route66"
+      endpoint_name        = "web"
+      origin_group_name    = "contoso"
+      origins_names        = ["web", "azure"]
+      forwarding_protocol  = "HttpsOnly"
+      patterns_to_match    = ["/*"]
+      supported_protocols  = ["Http", "Https"]
+      custom_domains_names = ["www"]
+      rule_sets_names      = ["my_rule_set", "my_rule_set2"]
     },
     {
       name                = "route2"
@@ -119,8 +119,7 @@ module "frontdoor_standard" {
       forwarding_protocol = "HttpsOnly"
       patterns_to_match   = ["/contoso"]
       supported_protocols = ["Http", "Https"]
-      #custom_domains_names = ["max"]
-      rule_sets_names = ["my_rule_set", "my_rule_set2"]
+      rule_sets_names     = ["my_rule_set", "my_rule_set2"]
     }
   ]
 

@@ -40,7 +40,7 @@ variable "endpoints" {
   description = "Manages CDN FrontDoor Endpoints."
   type = list(object({
     name                 = string
-    prefix               = optional(string, "")
+    prefix               = optional(string)
     custom_resource_name = optional(string)
     enabled              = optional(bool, true)
   }))

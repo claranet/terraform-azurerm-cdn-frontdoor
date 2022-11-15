@@ -1,4 +1,5 @@
 locals {
+
   origins_names_per_route = {
     for route in var.routes : route.name => [
       for origin in route.origins_names : azurerm_cdn_frontdoor_origin.frontdoor_origin[origin].id
@@ -17,16 +18,14 @@ locals {
     ]
   }
 
-  rules = concat(
+  rules = flatten([
+    for rule_set in var.rule_sets :
     [
-      for rule_set in var.rule_sets :
-      [
-        for rule in rule_set.rules : merge({
-          rule_set_name = rule_set.name
-        }, rule)
-      ]
+      for rule in rule_set.rules : merge({
+        rule_set_name = rule_set.name
+      }, rule)
     ]
-  ...)
+  ])
 
   # ------------------
   # Outputs

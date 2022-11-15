@@ -84,7 +84,7 @@ resource "azurecaf_name" "frontdoor_rule_set" {
 }
 
 resource "azurecaf_name" "frontdoor_rule" {
-  for_each = { for rule in local.rules : format("%s-%s", rule.rule_set_name, rule.name) => rule }
+  for_each = { for rule in local.rules : format("%s.%s", rule.rule_set_name, rule.name) => rule }
 
   name          = var.stack
   resource_type = "azurerm_cdn_frontdoor_rule"
