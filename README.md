@@ -195,7 +195,7 @@ module "frontdoor_standard" {
 
 | Name | Source | Version |
 |------|--------|---------|
-| diagnostics | claranet/diagnostic-settings/azurerm | 6.0.0 |
+| diagnostics | claranet/diagnostic-settings/azurerm | 6.1.0 |
 
 ## Resources
 
@@ -250,9 +250,14 @@ module "frontdoor_standard" {
 
 | Name | Description |
 |------|-------------|
-| frontdoor\_endpoints | The IDs of the frontend endpoints. |
-| frontdoor\_profile\_id | The ID of the FrontDoor Profile |
-| frontdoor\_profile\_name | The name of the FrontDoor Profile |
+| custom\_domains | FrontDoor custom domains outputs. |
+| endpoints | FrontDoor endpoints outputs. |
+| origin\_groups | FrontDoor origin groups outputs. |
+| origins | FrontDoor origins outputs. |
+| profile\_id | The ID of the FrontDoor Profile |
+| profile\_name | The name of the FrontDoor Profile |
+| rule\_sets | FrontDoor rule sets outputs. |
+| rules | FrontDoor rules outputs. |
 <!-- END_TF_DOCS -->
 ## Related documentation
 
