@@ -2,7 +2,7 @@ resource "azurecaf_name" "frontdoor_profile" {
   name          = var.stack
   resource_type = "azurerm_cdn_frontdoor_profile"
   prefixes      = var.name_prefix == "" ? null : [local.name_prefix]
-  suffixes      = compact([var.client_name, var.environment, local.name_suffix, var.use_caf_naming ? "" : "fdp"])
+  suffixes      = compact([var.client_name, var.environment, local.name_suffix, var.use_caf_naming ? "" : "cfdp"])
   use_slug      = var.use_caf_naming
   clean_input   = true
   separator     = "-"
@@ -14,7 +14,7 @@ resource "azurecaf_name" "frontdoor_endpoint" {
   name          = var.stack
   resource_type = "azurerm_cdn_frontdoor_endpoint"
   prefixes      = coalesce(compact([local.name_prefix, each.value.prefix]))
-  suffixes      = compact([var.client_name, var.environment, local.name_suffix, each.value.name, var.use_caf_naming ? "" : "fde"])
+  suffixes      = compact([var.client_name, var.environment, local.name_suffix, each.value.name, var.use_caf_naming ? "" : "cfde"])
   use_slug      = var.use_caf_naming
   clean_input   = true
   separator     = "-"
@@ -26,7 +26,7 @@ resource "azurecaf_name" "frontdoor_origin_group" {
   name          = var.stack
   resource_type = "azurerm_cdn_frontdoor_origin_group"
   prefixes      = var.name_prefix == "" ? null : [local.name_prefix]
-  suffixes      = compact([var.client_name, var.environment, local.name_suffix, each.value.name, var.use_caf_naming ? "" : "fdog"])
+  suffixes      = compact([var.client_name, var.environment, local.name_suffix, each.value.name, var.use_caf_naming ? "" : "cfdog"])
   use_slug      = var.use_caf_naming
   clean_input   = true
   separator     = "-"
@@ -38,7 +38,7 @@ resource "azurecaf_name" "frontdoor_origin" {
   name          = var.stack
   resource_type = "azurerm_cdn_frontdoor_origin"
   prefixes      = var.name_prefix == "" ? null : [local.name_prefix]
-  suffixes      = compact([var.client_name, var.environment, local.name_suffix, each.value.name, var.use_caf_naming ? "" : "fdo"])
+  suffixes      = compact([var.client_name, var.environment, local.name_suffix, each.value.name, var.use_caf_naming ? "" : "cfdo"])
   use_slug      = var.use_caf_naming
   clean_input   = true
   separator     = "-"
@@ -48,11 +48,11 @@ resource "azurecaf_name" "frontdoor_custom_domain" {
   for_each = { for custom_domain in var.custom_domains : custom_domain.name => custom_domain }
 
   name          = var.stack
-  resource_type = "azurerm_cdn_frontdoor_profile" #azurerm_cdn_frontdoor_custom_domain not available yet
+  resource_type = "azurerm_cdn_frontdoor_custom_domain"
 
   prefixes    = compact([var.use_caf_naming ? "fdcd" : "", local.name_prefix])
-  suffixes    = compact([var.client_name, var.environment, local.name_suffix, each.value.name, var.use_caf_naming ? "" : "fdcd"])
-  use_slug    = false
+  suffixes    = compact([var.client_name, var.environment, local.name_suffix, each.value.name, var.use_caf_naming ? "" : "cfdcd"])
+  use_slug    = var.use_caf_naming
   clean_input = true
   separator   = "-"
 }
@@ -61,11 +61,11 @@ resource "azurecaf_name" "frontdoor_route" {
   for_each = { for route in var.routes : route.name => route }
 
   name          = var.stack
-  resource_type = "azurerm_cdn_frontdoor_profile" #azurerm_cdn_frontdoor_route not available yet
+  resource_type = "azurerm_cdn_frontdoor_route"
 
   prefixes    = compact([var.use_caf_naming ? "fdr" : "", local.name_prefix])
-  suffixes    = compact([var.client_name, var.environment, local.name_suffix, each.value.name, var.use_caf_naming ? "" : "fdr"])
-  use_slug    = false
+  suffixes    = compact([var.client_name, var.environment, local.name_suffix, each.value.name, var.use_caf_naming ? "" : "cfdroute"])
+  use_slug    = var.use_caf_naming
   clean_input = true
   separator   = "-"
 }
@@ -77,7 +77,7 @@ resource "azurecaf_name" "frontdoor_rule_set" {
   resource_type = "azurerm_cdn_frontdoor_rule_set"
 
   prefixes    = var.name_prefix == "" ? null : [local.name_prefix]
-  suffixes    = compact([var.client_name, var.environment, local.name_suffix, each.value.name, var.use_caf_naming ? "" : "fdrs"])
+  suffixes    = compact([var.client_name, var.environment, local.name_suffix, each.value.name, var.use_caf_naming ? "" : "cfdrs"])
   use_slug    = var.use_caf_naming
   clean_input = true
   separator   = "-"
@@ -90,7 +90,7 @@ resource "azurecaf_name" "frontdoor_rule" {
   resource_type = "azurerm_cdn_frontdoor_rule"
 
   prefixes    = var.name_prefix == "" ? null : [local.name_prefix]
-  suffixes    = compact([var.client_name, var.environment, local.name_suffix, each.value.rule_set_name, each.value.name, var.use_caf_naming ? "" : "fdr"])
+  suffixes    = compact([var.client_name, var.environment, local.name_suffix, each.value.rule_set_name, each.value.name, var.use_caf_naming ? "" : "cfdr"])
   use_slug    = var.use_caf_naming
   clean_input = true
   separator   = "-"
