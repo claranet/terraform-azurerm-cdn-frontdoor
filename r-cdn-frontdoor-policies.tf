@@ -1,5 +1,5 @@
 resource "azurerm_cdn_frontdoor_firewall_policy" "frontdoor_firewall_policy" {
-  for_each = { for firewall_policy in var.firewall_policies : firewall_policy.name => firewall_policy }
+  for_each = try({ for firewall_policy in var.firewall_policies : firewall_policy.name => firewall_policy }, {})
 
   name                              = coalesce(each.value.custom_resource_name, data.azurecaf_name.frontdoor_firewall_policy[each.key].result)
   resource_group_name               = var.resource_group_name
@@ -11,7 +11,7 @@ resource "azurerm_cdn_frontdoor_firewall_policy" "frontdoor_firewall_policy" {
   custom_block_response_body        = each.value.custom_block_response_body
 
   dynamic "custom_rule" {
-    for_each = each.value.custom_rules
+    for_each = try(each.value.custom_rules, {})
     content {
       name                           = custom_rule.value.name
       enabled                        = custom_rule.value.enabled
@@ -22,7 +22,7 @@ resource "azurerm_cdn_frontdoor_firewall_policy" "frontdoor_firewall_policy" {
       action                         = custom_rule.value.action
 
       dynamic "match_condition" {
-        for_each = custom_rule.value.match_conditions
+        for_each = try(custom_rule.value.match_conditions, {})
         content {
           match_variable     = match_condition.value.match_variable
           match_values       = match_condition.value.match_values
@@ -36,13 +36,13 @@ resource "azurerm_cdn_frontdoor_firewall_policy" "frontdoor_firewall_policy" {
   }
 
   dynamic "managed_rule" {
-    for_each = each.value.managed_rules
+    for_each = try(each.value.managed_rules, {})
     content {
       type    = managed_rule.value.type
       version = managed_rule.value.version
       action  = managed_rule.value.action
       dynamic "exclusion" {
-        for_each = managed_rule.value.exclusions
+        for_each = try(managed_rule.value.exclusions, {})
         content {
           match_variable = exclusion.value.match_variable
           operator       = exclusion.value.operator
@@ -50,11 +50,11 @@ resource "azurerm_cdn_frontdoor_firewall_policy" "frontdoor_firewall_policy" {
         }
       }
       dynamic "override" {
-        for_each = managed_rule.value.overrides
+        for_each = try(managed_rule.value.overrides, {})
         content {
           rule_group_name = override.value.rule_group_name
           dynamic "exclusion" {
-            for_each = override.value.exclusions
+            for_each = try(override.value.exclusions, {})
             content {
               match_variable = exclusion.value.match_variable
               operator       = exclusion.value.operator
@@ -62,13 +62,13 @@ resource "azurerm_cdn_frontdoor_firewall_policy" "frontdoor_firewall_policy" {
             }
           }
           dynamic "rule" {
-            for_each = override.value.rules
+            for_each = try(override.value.rules, {})
             content {
               rule_id = rule.value.rule_id
               action  = rule.value.action
               enabled = rule.value.enabled
               dynamic "exclusion" {
-                for_each = rule.value.exclusions
+                for_each = try(rule.value.exclusions, {})
                 content {
                   match_variable = exclusion.value.match_variable
                   operator       = exclusion.value.operator

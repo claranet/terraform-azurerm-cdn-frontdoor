@@ -379,22 +379,4 @@ variable "firewall_policies" {
     })), [])
   }))
   default = []
-
-  # Validate CDN FD SKU for custom rules
-  # validation {
-  #   condition =
-  #   error_message = ""
-  # }
-
 }
-
-# ------------------
-# CDN FrontDoor Security Policies
-# variable "security_policies" {
-#   description = "Manages CDN FrontDoor Frontdoor Security Policies."
-#   type = list(object({
-#     name                 = string
-#     custom_resource_name = optional(string)
-#   }))
-#   default = []
-# }
