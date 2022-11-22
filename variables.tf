@@ -21,7 +21,7 @@ variable "resource_group_name" {
 }
 
 # ------------------
-# FrontDoor Profile
+# CDN FrontDoor Profile
 variable "sku_name" {
   description = "Specifies the SKU for this CDN FrontDoor Profile. Possible values include `Standard_AzureFrontDoor` and `Premium_AzureFrontDoor`."
   type        = string
@@ -35,9 +35,9 @@ variable "response_timeout_seconds" {
 }
 
 # ------------------
-# FrontDoor Endpoint
+# CDN FrontDoor Endpoint
 variable "endpoints" {
-  description = "Manages CDN FrontDoor Endpoints."
+  description = "CDN FrontDoor Endpoints configurations."
   type = list(object({
     name                 = string
     prefix               = optional(string)
@@ -48,9 +48,9 @@ variable "endpoints" {
 }
 
 # ------------------
-# FrontDoor Origin Groups
+# CDN FrontDoor Origin Groups
 variable "origin_groups" {
-  description = "Manages CDN FrontDoor Origin Groups."
+  description = "CDN FrontDoor Origin Groups configurations."
   type = list(object({
     name                                                      = string
     custom_resource_name                                      = optional(string)
@@ -72,9 +72,9 @@ variable "origin_groups" {
 }
 
 # ------------------
-# FrontDoor Origins
+# CDN FrontDoor Origins
 variable "origins" {
-  description = "Manages CDN FrontDoor Origins."
+  description = "CDN FrontDoor Origins configurations."
   type = list(object({
     name                           = string
     custom_resource_name           = optional(string)
@@ -100,9 +100,9 @@ variable "origins" {
 }
 
 # ------------------
-# FrontDoor Custom Domains
+# CDN FrontDoor Custom Domains
 variable "custom_domains" {
-  description = "Manages CDN FrontDoor Custom Domains."
+  description = "CDN FrontDoor Custom Domains configurations."
   type = list(object({
     name                 = string
     custom_resource_name = optional(string)
@@ -128,9 +128,9 @@ variable "custom_domains" {
 }
 
 # ------------------
-# FrontDoor Routes
+# CDN FrontDoor Routes
 variable "routes" {
-  description = "Manages a CDN FrontDoor Routes."
+  description = "CDN FrontDoor Routes configurations."
   type = list(object({
     name                 = string
     custom_resource_name = optional(string)
@@ -161,9 +161,9 @@ variable "routes" {
 }
 
 # ------------------
-# FrontDoor Rule Sets + Rules
+# CDN FrontDoor Rule Sets + Rules
 variable "rule_sets" {
-  description = "Manages CDN FrontDoor Rule Sets and associated Rules."
+  description = "CDN FrontDoor Rule Sets and associated Rules configurations."
   type = list(object({
     name                 = string
     custom_resource_name = optional(string)
@@ -322,18 +322,79 @@ variable "rule_sets" {
 }
 
 # ------------------
-# FrontDoor WAF Policy
-# variable "frontdoor_waf_policy_id" {
-#   description = "Frontdoor WAF Policy ID"
-#   type        = string
-#   default     = null
-# }
+# CDN FrontDoor Firewall Policies
+variable "firewall_policies" {
+  description = "CDN Frontdoor Firewall Policies configurations."
+  type = list(object({
+    name                              = string
+    custom_resource_name              = optional(string)
+    enabled                           = optional(bool, true)
+    mode                              = optional(string, "Prevention")
+    redirect_url                      = optional(string)
+    custom_block_response_status_code = optional(number)
+    custom_block_response_body        = optional(string)
+    custom_rules = optional(list(object({
+      name                           = string
+      action                         = string
+      enabled                        = optional(bool, true)
+      priority                       = number
+      type                           = string
+      rate_limit_duration_in_minutes = optional(number, 1)
+      rate_limit_threshold           = optional(number, 10)
+      match_conditions = list(object({
+        match_variable   = string
+        match_values     = list(string)
+        operator         = string
+        selector         = optional(string)
+        negate_condition = optional(bool)
+        transforms       = optional(list(string), [])
+      }))
+    })), [])
+    managed_rules = optional(list(object({
+      type    = string
+      version = string
+      action  = string
+      exclusions = optional(list(object({
+        match_variable = string
+        operator       = string
+        selector       = string
+      })), [])
+      overrides = optional(list(object({
+        rule_group_name = string
+        exclusions = optional(list(object({
+          match_variable = string
+          operator       = string
+          selector       = string
+        })), [])
+        rules = optional(list(object({
+          rule_id = string
+          action  = string
+          enabled = optional(bool, true)
+          exclusions = optional(list(object({
+            match_variable = string
+            operator       = string
+            selector       = string
+        })), []) })), [])
+      })), [])
+    })), [])
+  }))
+  default = []
 
+  # Validate CDN FD SKU for custom rules
+  # validation {
+  #   condition =
+  #   error_message = ""
+  # }
+
+}
 
 # ------------------
-# FrontDoor Security Policy
-# variable "frontdoor_waf_policy_id" {
-#   description = "Frontdoor WAF Policy ID"
-#   type        = string
-#   default     = null
+# CDN FrontDoor Security Policies
+# variable "security_policies" {
+#   description = "Manages CDN FrontDoor Frontdoor Security Policies."
+#   type = list(object({
+#     name                 = string
+#     custom_resource_name = optional(string)
+#   }))
+#   default = []
 # }

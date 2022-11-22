@@ -1,7 +1,7 @@
 resource "azurerm_cdn_frontdoor_origin_group" "frontdoor_origin_group" {
   for_each = { for origin_group in var.origin_groups : origin_group.name => origin_group }
 
-  name                     = coalesce(each.value.custom_resource_name, data.azurecaf_name.frontdoor_origin_group[each.value.name].result)
+  name                     = coalesce(each.value.custom_resource_name, data.azurecaf_name.frontdoor_origin_group[each.key].result)
   cdn_frontdoor_profile_id = azurerm_cdn_frontdoor_profile.frontdoor_profile.id
 
   session_affinity_enabled = each.value.session_affinity_enabled
@@ -28,7 +28,7 @@ resource "azurerm_cdn_frontdoor_origin_group" "frontdoor_origin_group" {
 resource "azurerm_cdn_frontdoor_origin" "frontdoor_origin" {
   for_each = { for origin in var.origins : origin.name => origin }
 
-  name                          = coalesce(each.value.custom_resource_name, data.azurecaf_name.frontdoor_origin[each.value.name].result)
+  name                          = coalesce(each.value.custom_resource_name, data.azurecaf_name.frontdoor_origin[each.key].result)
   cdn_frontdoor_origin_group_id = azurerm_cdn_frontdoor_origin_group.frontdoor_origin_group[each.value.origin_group_name].id
 
   enabled                        = each.value.enabled

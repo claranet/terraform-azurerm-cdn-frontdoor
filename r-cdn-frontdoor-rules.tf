@@ -1,7 +1,7 @@
 resource "azurerm_cdn_frontdoor_rule_set" "frontdoor_rule_set" {
   for_each = { for rule_set in var.rule_sets : rule_set.name => rule_set }
 
-  name                     = coalesce(each.value.custom_resource_name, data.azurecaf_name.frontdoor_rule_set[each.value.name].result)
+  name                     = coalesce(each.value.custom_resource_name, data.azurecaf_name.frontdoor_rule_set[each.key].result)
   cdn_frontdoor_profile_id = azurerm_cdn_frontdoor_profile.frontdoor_profile.id
 }
 
