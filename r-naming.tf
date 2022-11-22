@@ -49,12 +49,11 @@ data "azurecaf_name" "frontdoor_custom_domain" {
 
   name          = var.stack
   resource_type = "azurerm_cdn_frontdoor_custom_domain"
-
-  prefixes    = compact([var.use_caf_naming ? "fdcd" : "", local.name_prefix])
-  suffixes    = compact([var.client_name, var.environment, local.name_suffix, each.value.name, var.use_caf_naming ? "" : "cfdcd"])
-  use_slug    = var.use_caf_naming
-  clean_input = true
-  separator   = "-"
+  prefixes      = compact([var.use_caf_naming ? "fdcd" : "", local.name_prefix])
+  suffixes      = compact([var.client_name, var.environment, local.name_suffix, each.value.name, var.use_caf_naming ? "" : "cfdcd"])
+  use_slug      = var.use_caf_naming
+  clean_input   = true
+  separator     = "-"
 }
 
 data "azurecaf_name" "frontdoor_route" {
@@ -62,12 +61,11 @@ data "azurecaf_name" "frontdoor_route" {
 
   name          = var.stack
   resource_type = "azurerm_cdn_frontdoor_route"
-
-  prefixes    = compact([var.use_caf_naming ? "fdr" : "", local.name_prefix])
-  suffixes    = compact([var.client_name, var.environment, local.name_suffix, each.value.name, var.use_caf_naming ? "" : "cfdroute"])
-  use_slug    = var.use_caf_naming
-  clean_input = true
-  separator   = "-"
+  prefixes      = compact([var.use_caf_naming ? "fdr" : "", local.name_prefix])
+  suffixes      = compact([var.client_name, var.environment, local.name_suffix, each.value.name, var.use_caf_naming ? "" : "cfdroute"])
+  use_slug      = var.use_caf_naming
+  clean_input   = true
+  separator     = "-"
 }
 
 data "azurecaf_name" "frontdoor_rule_set" {
@@ -75,12 +73,11 @@ data "azurecaf_name" "frontdoor_rule_set" {
 
   name          = var.stack
   resource_type = "azurerm_cdn_frontdoor_rule_set"
-
-  prefixes    = var.name_prefix == "" ? null : [local.name_prefix]
-  suffixes    = compact([var.client_name, var.environment, local.name_suffix, each.value.name, var.use_caf_naming ? "" : "cfdrs"])
-  use_slug    = var.use_caf_naming
-  clean_input = true
-  separator   = "-"
+  prefixes      = var.name_prefix == "" ? null : [local.name_prefix]
+  suffixes      = compact([var.client_name, var.environment, local.name_suffix, each.value.name, var.use_caf_naming ? "" : "cfdrs"])
+  use_slug      = var.use_caf_naming
+  clean_input   = true
+  separator     = "-"
 }
 
 data "azurecaf_name" "frontdoor_rule" {
@@ -88,12 +85,11 @@ data "azurecaf_name" "frontdoor_rule" {
 
   name          = var.stack
   resource_type = "azurerm_cdn_frontdoor_rule"
-
-  prefixes    = var.name_prefix == "" ? null : [local.name_prefix]
-  suffixes    = compact([var.client_name, var.environment, local.name_suffix, each.value.rule_set_name, each.value.name, var.use_caf_naming ? "" : "cfdr"])
-  use_slug    = var.use_caf_naming
-  clean_input = true
-  separator   = "-"
+  prefixes      = var.name_prefix == "" ? null : [local.name_prefix]
+  suffixes      = compact([var.client_name, var.environment, local.name_suffix, each.value.rule_set_name, each.value.name, var.use_caf_naming ? "" : "cfdr"])
+  use_slug      = var.use_caf_naming
+  clean_input   = true
+  separator     = "-"
 }
 
 data "azurecaf_name" "frontdoor_firewall_policy" {
@@ -101,10 +97,9 @@ data "azurecaf_name" "frontdoor_firewall_policy" {
 
   name          = var.stack
   resource_type = "azurerm_cdn_frontdoor_firewall_policy"
-
-  prefixes    = var.name_prefix == "" ? null : [local.name_prefix]
-  suffixes    = compact([var.client_name, var.environment, local.name_suffix, each.value.name, var.use_caf_naming ? "" : "cfdfp"])
-  use_slug    = var.use_caf_naming
-  clean_input = true
-  separator   = "-"
+  prefixes      = var.name_prefix == "" ? null : [local.name_prefix]
+  suffixes      = compact([var.client_name, var.environment, local.name_suffix, each.value.name, var.use_caf_naming ? "" : "cfdfp"])
+  use_slug      = var.use_caf_naming
+  clean_input   = true
+  separator     = "-"
 }

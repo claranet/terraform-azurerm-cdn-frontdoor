@@ -385,4 +385,4 @@ module "frontdoor_standard" {
 <!-- END_TF_DOCS -->
 ## Related documentation
 
-Azure Front Door: [docs.microsoft.com/en-us/rest/api/frontdoor/](https://docs.microsoft.com/en-us/rest/api/frontdoor/)
+Azure Front Door REST API: [docs.microsoft.com/en-us/rest/api/frontdoor/](https://docs.microsoft.com/en-us/rest/api/frontdoor/)

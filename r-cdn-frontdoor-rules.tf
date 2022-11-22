@@ -90,7 +90,7 @@ resource "azurerm_cdn_frontdoor_rule" "frontdoor_rule" {
         content {
           operator         = each.value.conditions.query_string_condition.operator
           negate_condition = each.value.conditions.query_string_condition.negate_condition
-          match_values     = each.value.conditions.query_string_condition.negate_condition
+          match_values     = each.value.conditions.query_string_condition.match_values
           transforms       = each.value.conditions.query_string_condition.transforms
         }
       }
