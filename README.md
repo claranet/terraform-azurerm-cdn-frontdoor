@@ -1,92 +1,388 @@
-# cdn-frontdoor
+# Azure CDN FrontDoor
+[![Changelog](https://img.shields.io/badge/changelog-release-green.svg)](CHANGELOG.md) [![Notice](https://img.shields.io/badge/notice-copyright-yellow.svg)](NOTICE) [![Apache V2 License](https://img.shields.io/badge/license-Apache%20V2-orange.svg)](LICENSE) [![TF Registry](https://img.shields.io/badge/terraform-registry-blue.svg)](https://registry.terraform.io/modules/claranet/cdn-frontdoor/azurerm/)
 
-Azure CDN FrontDoor (Standard/Premium) module
+This Terraform module is designed to create an [Azure CDN FrontDoor (Standard/Premium)](https://docs.microsoft.com/en-us/azure/frontdoor/standard-premium/tier-comparison) resource.
 
-## Getting started
+<!-- BEGIN_TF_DOCS -->
+## Global versioning rule for Claranet Azure modules
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
-
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
-
-## Add your files
-
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
-
-```
-cd existing_repo
-git remote add origin https://git.fr.clara.net/claranet/projects/cloud/azure/terraform/modules/cdn-frontdoor.git
-git branch -M main
-git push -uf origin main
-```
-
-## Integrate with your tools
-
-- [ ] [Set up project integrations](https://git.fr.clara.net/claranet/projects/cloud/azure/terraform/modules/cdn-frontdoor/-/settings/integrations)
-
-## Collaborate with your team
-
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Automatically merge when pipeline succeeds](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
-
-## Test and Deploy
-
-Use the built-in continuous integration in GitLab.
-
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing(SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
-
-***
-
-# Editing this README
-
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thank you to [makeareadme.com](https://www.makeareadme.com/) for this template.
-
-## Suggestions for a good README
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
-
-## Name
-Choose a self-explaining name for your project.
-
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
-
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
-
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
-
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+| Module version | Terraform version | AzureRM version |
+| -------------- | ----------------- | --------------- |
+| >= 7.x.x       | 1.3.x             | >= 3.0          |
+| >= 6.x.x       | 1.x               | >= 3.0          |
+| >= 5.x.x       | 0.15.x            | >= 2.0          |
+| >= 4.x.x       | 0.13.x / 0.14.x   | >= 2.0          |
+| >= 3.x.x       | 0.12.x            | >= 2.0          |
+| >= 2.x.x       | 0.12.x            | < 2.0           |
+| <  2.x.x       | 0.11.x            | < 2.0           |
 
 ## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+This module is optimized to work with the [Claranet terraform-wrapper](https://github.com/claranet/terraform-wrapper) tool
+which set some terraform variables in the environment needed by this module.
+More details about variables set by the `terraform-wrapper` available in the [documentation](https://github.com/claranet/terraform-wrapper#environment).
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+```hcl
+module "azure_region" {
+  source  = "claranet/regions/azurerm"
+  version = "x.x.x"
 
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
+  azure_region = var.azure_region
+}
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+module "rg" {
+  source  = "claranet/rg/azurerm"
+  version = "x.x.x"
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
+  location    = module.azure_region.location
+  client_name = var.client_name
+  environment = var.environment
+  stack       = var.stack
+}
 
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
+module "logs" {
+  source  = "claranet/run-common/azurerm//modules/logs"
+  version = "x.x.x"
 
-## License
-For open source projects, say how it is licensed.
+  client_name         = var.client_name
+  environment         = var.environment
+  stack               = var.stack
+  location            = module.azure_region.location
+  location_short      = module.azure_region.location_short
+  resource_group_name = module.rg.resource_group_name
+}
 
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+module "frontdoor_standard" {
+
+  source  = "claranet/cdn-frontdoor/azurerm"
+  version = "x.x.x"
+
+  client_name = var.client_name
+  environment = var.environment
+  stack       = var.stack
+
+  resource_group_name = module.rg.resource_group_name
+
+  sku_name = "Premium_AzureFrontDoor"
+
+  logs_destinations_ids = [
+    module.logs.log_analytics_workspace_id,
+    module.logs.logs_storage_account_id
+  ]
+
+  endpoints = [
+    {
+      name = "web"
+    },
+    {
+      name    = "azure"
+      enabled = false
+    }
+  ]
+
+  origin_groups = [
+    {
+      name = "contoso"
+      health_probe = {
+        interval_in_seconds = 250
+        path                = "/"
+        protocol            = "Https"
+        request_type        = "GET"
+      }
+      load_balancing = {
+        successful_samples_required = 1
+      }
+    },
+    {
+      name = "contoso2"
+      health_probe = {
+        interval_in_seconds = 250
+        path                = "/"
+        protocol            = "Https"
+        request_type        = "GET"
+      }
+    }
+  ]
+
+  origins = [
+    {
+      name                           = "web"
+      origin_group_name              = "contoso"
+      certificate_name_check_enabled = false
+      host_name                      = "www.contoso.com"
+    },
+    {
+      name                           = "azure"
+      origin_group_name              = "contoso2"
+      certificate_name_check_enabled = false
+      host_name                      = "azure.contoso.com"
+    }
+  ]
+
+  custom_domains = [
+    {
+      name      = "www"
+      host_name = "www.contoso.com"
+    }
+  ]
+
+  routes = [
+    {
+      name                 = "route66"
+      endpoint_name        = "web"
+      origin_group_name    = "contoso"
+      origins_names        = ["web", "azure"]
+      forwarding_protocol  = "HttpsOnly"
+      patterns_to_match    = ["/*"]
+      supported_protocols  = ["Http", "Https"]
+      custom_domains_names = ["www"]
+      rule_sets_names      = ["my_rule_set", "my_rule_set2"]
+    },
+    {
+      name                = "route2"
+      endpoint_name       = "azure"
+      origin_group_name   = "contoso2"
+      origins_names       = ["web"]
+      forwarding_protocol = "HttpsOnly"
+      patterns_to_match   = ["/contoso"]
+      supported_protocols = ["Http", "Https"]
+      rule_sets_names     = ["my_rule_set", "my_rule_set2"]
+    }
+  ]
+
+  rule_sets = [
+    {
+      name                 = "my_rule_set"
+      custom_resource_name = "custom_rule"
+      rules = [
+        {
+          name                 = "redirect"
+          custom_resource_name = "myrulename"
+          order                = 1
+          actions = {
+            url_rewrite_action = {
+              source_pattern = "/"
+              destination    = "/contoso"
+            }
+          }
+          conditions = {
+            is_device_condition = {
+              operator     = "Equal"
+              match_values = ["Desktop"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      name                 = "my_rule_set2"
+      custom_resource_name = "custom_rule2"
+    }
+  ]
+
+  firewall_policies = [
+    {
+      name                              = "test"
+      enabled                           = true
+      mode                              = "Prevention"
+      redirect_url                      = "https://www.contoso.com"
+      custom_block_response_status_code = 403
+      custom_block_response_body        = "PGh0bWw+CjxoZWFkZXI+PHRpdGxlPkhlbGxvPC90aXRsZT48L2hlYWRlcj4KPGJvZHk+CkhlbGxvIHdvcmxkCjwvYm9keT4KPC9odG1sPg=="
+
+      custom_rules = [
+        {
+          name                           = "Rule1"
+          enabled                        = true
+          priority                       = 1
+          rate_limit_duration_in_minutes = 1
+          rate_limit_threshold           = 10
+          type                           = "MatchRule"
+          action                         = "Block"
+
+          match_conditions = [
+            {
+              match_variable     = "RemoteAddr"
+              operator           = "IPMatch"
+              negation_condition = false
+              match_values       = ["10.0.1.0/24", "10.0.0.0/24"]
+            }
+          ]
+        },
+        {
+          name                           = "Rule2"
+          enabled                        = true
+          priority                       = 2
+          rate_limit_duration_in_minutes = 1
+          rate_limit_threshold           = 10
+          type                           = "MatchRule"
+          action                         = "Block"
+
+          match_conditions = [
+            {
+              match_variable     = "RemoteAddr"
+              operator           = "IPMatch"
+              negation_condition = false
+              match_values       = ["192.168.1.0/24"]
+            },
+            {
+              match_variable     = "RequestHeader"
+              selector           = "UserAgent"
+              operator           = "Contains"
+              negation_condition = false
+              match_values       = ["windows"]
+              transforms         = ["Lowercase", "Trim"]
+            }
+          ]
+        }
+      ]
+
+      managed_rules = [
+        {
+          type    = "DefaultRuleSet"
+          version = "1.0"
+          action  = "Log"
+
+          exclusions = [
+            {
+              match_variable = "QueryStringArgNames"
+              operator       = "Equals"
+              selector       = "not_suspicious"
+            }
+          ]
+
+          overrides = [
+            {
+              rule_group_name = "PHP"
+
+              rules = [
+                {
+                  rule_id = "933100"
+                  enabled = false
+                  action  = "Block"
+                }
+              ]
+            },
+            {
+              rule_group_name = "SQLI"
+
+              exclusions = [{
+                match_variable = "QueryStringArgNames"
+                operator       = "Equals"
+                selector       = "really_not_suspicious"
+                }
+              ]
+
+              rules = [{
+                rule_id = "942200"
+                action  = "Block"
+
+                exclusions = [
+                  {
+                    match_variable = "QueryStringArgNames"
+                    operator       = "Equals"
+                    selector       = "innocent"
+                  }
+                ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          type    = "Microsoft_BotManagerRuleSet"
+          version = "1.0"
+          action  = "Log"
+        }
+      ]
+
+    }
+  ]
+
+  extra_tags = {
+    foo = "bar"
+  }
+}
+```
+
+## Providers
+
+| Name | Version |
+|------|---------|
+| azurecaf | ~> 1.2, >= 1.2.22 |
+| azurerm | ~> 3.31 |
+
+## Modules
+
+| Name | Source | Version |
+|------|--------|---------|
+| diagnostics | claranet/diagnostic-settings/azurerm | 6.2.0 |
+
+## Resources
+
+| Name | Type |
+|------|------|
+| [azurerm_cdn_frontdoor_custom_domain.frontdoor_custom_domain](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/cdn_frontdoor_custom_domain) | resource |
+| [azurerm_cdn_frontdoor_endpoint.frontdoor_endpoint](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/cdn_frontdoor_endpoint) | resource |
+| [azurerm_cdn_frontdoor_firewall_policy.frontdoor_firewall_policy](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/cdn_frontdoor_firewall_policy) | resource |
+| [azurerm_cdn_frontdoor_origin.frontdoor_origin](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/cdn_frontdoor_origin) | resource |
+| [azurerm_cdn_frontdoor_origin_group.frontdoor_origin_group](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/cdn_frontdoor_origin_group) | resource |
+| [azurerm_cdn_frontdoor_profile.frontdoor_profile](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/cdn_frontdoor_profile) | resource |
+| [azurerm_cdn_frontdoor_route.frontdoor_route](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/cdn_frontdoor_route) | resource |
+| [azurerm_cdn_frontdoor_rule.frontdoor_rule](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/cdn_frontdoor_rule) | resource |
+| [azurerm_cdn_frontdoor_rule_set.frontdoor_rule_set](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/cdn_frontdoor_rule_set) | resource |
+| [azurecaf_name.frontdoor_custom_domain](https://registry.terraform.io/providers/aztfmod/azurecaf/latest/docs/data-sources/name) | data source |
+| [azurecaf_name.frontdoor_endpoint](https://registry.terraform.io/providers/aztfmod/azurecaf/latest/docs/data-sources/name) | data source |
+| [azurecaf_name.frontdoor_firewall_policy](https://registry.terraform.io/providers/aztfmod/azurecaf/latest/docs/data-sources/name) | data source |
+| [azurecaf_name.frontdoor_origin](https://registry.terraform.io/providers/aztfmod/azurecaf/latest/docs/data-sources/name) | data source |
+| [azurecaf_name.frontdoor_origin_group](https://registry.terraform.io/providers/aztfmod/azurecaf/latest/docs/data-sources/name) | data source |
+| [azurecaf_name.frontdoor_profile](https://registry.terraform.io/providers/aztfmod/azurecaf/latest/docs/data-sources/name) | data source |
+| [azurecaf_name.frontdoor_route](https://registry.terraform.io/providers/aztfmod/azurecaf/latest/docs/data-sources/name) | data source |
+| [azurecaf_name.frontdoor_rule](https://registry.terraform.io/providers/aztfmod/azurecaf/latest/docs/data-sources/name) | data source |
+| [azurecaf_name.frontdoor_rule_set](https://registry.terraform.io/providers/aztfmod/azurecaf/latest/docs/data-sources/name) | data source |
+
+## Inputs
+
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|:--------:|
+| client\_name | Client name/account used in naming. | `string` | n/a | yes |
+| custom\_diagnostic\_settings\_name | Custom name of the diagnostics settings, name will be 'default' if not set. | `string` | `"default"` | no |
+| custom\_domains | CDN FrontDoor Custom Domains configurations. | <pre>list(object({<br>    name                 = string<br>    custom_resource_name = optional(string)<br>    host_name            = string<br>    dns_zone_id          = optional(string)<br>    tls = optional(object({<br>      certificate_type        = optional(string, "ManagedCertificate")<br>      minimum_tls_version     = optional(string, "TLS12")<br>      cdn_frontdoor_secret_id = optional(string)<br>    }), {})<br>  }))</pre> | `[]` | no |
+| default\_tags\_enabled | Option to enable or disable default tags. | `bool` | `true` | no |
+| endpoints | CDN FrontDoor Endpoints configurations. | <pre>list(object({<br>    name                 = string<br>    prefix               = optional(string)<br>    custom_resource_name = optional(string)<br>    enabled              = optional(bool, true)<br>  }))</pre> | `[]` | no |
+| environment | Project environment. | `string` | n/a | yes |
+| extra\_tags | Extra tags to add. | `map(string)` | `{}` | no |
+| firewall\_policies | CDN Frontdoor Firewall Policies configurations. | <pre>list(object({<br>    name                              = string<br>    custom_resource_name              = optional(string)<br>    enabled                           = optional(bool, true)<br>    mode                              = optional(string, "Prevention")<br>    redirect_url                      = optional(string)<br>    custom_block_response_status_code = optional(number)<br>    custom_block_response_body        = optional(string)<br>    custom_rules = optional(list(object({<br>      name                           = string<br>      action                         = string<br>      enabled                        = optional(bool, true)<br>      priority                       = number<br>      type                           = string<br>      rate_limit_duration_in_minutes = optional(number, 1)<br>      rate_limit_threshold           = optional(number, 10)<br>      match_conditions = list(object({<br>        match_variable   = string<br>        match_values     = list(string)<br>        operator         = string<br>        selector         = optional(string)<br>        negate_condition = optional(bool)<br>        transforms       = optional(list(string), [])<br>      }))<br>    })), [])<br>    managed_rules = optional(list(object({<br>      type    = string<br>      version = optional(string, "1.0")<br>      action  = string<br>      exclusions = optional(list(object({<br>        match_variable = string<br>        operator       = string<br>        selector       = string<br>      })), [])<br>      overrides = optional(list(object({<br>        rule_group_name = string<br>        exclusions = optional(list(object({<br>          match_variable = string<br>          operator       = string<br>          selector       = string<br>        })), [])<br>        rules = optional(list(object({<br>          rule_id = string<br>          action  = string<br>          enabled = optional(bool, true)<br>          exclusions = optional(list(object({<br>            match_variable = string<br>            operator       = string<br>            selector       = string<br>        })), []) })), [])<br>      })), [])<br>    })), [])<br>  }))</pre> | `[]` | no |
+| frontdoor\_profile\_name | Specifies the name of the FrontDoor Profile. | `string` | `""` | no |
+| logs\_categories | Log categories to send to destinations. | `list(string)` | `null` | no |
+| logs\_destinations\_ids | List of destination resources IDs for logs diagnostics destination. Can be Storage Account, Log Analytics Workspace and Event Hub. No more than one of each can be set. Empty list to disable logging. | `list(string)` | n/a | yes |
+| logs\_metrics\_categories | Metrics categories to send to destinations. | `list(string)` | `null` | no |
+| logs\_retention\_days | Number of days to keep logs on storage account | `number` | `30` | no |
+| name\_prefix | Optional prefix for the generated name | `string` | `""` | no |
+| name\_suffix | Optional suffix for the generated name | `string` | `""` | no |
+| origin\_groups | CDN FrontDoor Origin Groups configurations. | <pre>list(object({<br>    name                                                      = string<br>    custom_resource_name                                      = optional(string)<br>    session_affinity_enabled                                  = optional(bool, true)<br>    restore_traffic_time_to_healed_or_new_endpoint_in_minutes = optional(number, 10)<br>    health_probe = optional(object({<br>      interval_in_seconds = number<br>      path                = string<br>      protocol            = string<br>      request_type        = string<br>    }))<br>    load_balancing = optional(object({<br>      additional_latency_in_milliseconds = optional(number, 50)<br>      sample_size                        = optional(number, 4)<br>      successful_samples_required        = optional(number, 3)<br>    }), {})<br>  }))</pre> | `[]` | no |
+| origins | CDN FrontDoor Origins configurations. | <pre>list(object({<br>    name                           = string<br>    custom_resource_name           = optional(string)<br>    origin_group_name              = string<br>    enabled                        = optional(bool, true)<br>    certificate_name_check_enabled = optional(bool, true)<br><br>    host_name          = string<br>    http_port          = optional(number, 80)<br>    https_port         = optional(number, 443)<br>    origin_host_header = optional(string)<br>    priority           = optional(number, 1)<br>    weight             = optional(number, 1)<br><br>    private_link = optional(object({<br>      request_message        = optional(string)<br>      target_type            = optional(string)<br>      location               = string<br>      private_link_target_id = string<br>    }))<br>  }))</pre> | `[]` | no |
+| resource\_group\_name | Resource group name. | `string` | n/a | yes |
+| response\_timeout\_seconds | Specifies the maximum response timeout in seconds. Possible values are between `16` and `240` seconds (inclusive). | `number` | `120` | no |
+| routes | CDN FrontDoor Routes configurations. | <pre>list(object({<br>    name                 = string<br>    custom_resource_name = optional(string)<br>    enabled              = optional(bool, true)<br><br>    endpoint_name     = string<br>    origin_group_name = string<br>    origins_names     = list(string)<br><br>    forwarding_protocol = optional(string, "HttpsOnly")<br>    patterns_to_match   = optional(list(string), ["/*"])<br>    supported_protocols = optional(list(string), ["Http", "Https"])<br>    cache = optional(object({<br>      query_string_caching_behavior = optional(string, "IgnoreQueryString")<br>      query_strings                 = optional(string)<br>      compression_enabled           = optional(bool, false)<br>      content_types_to_compress     = optional(list(string))<br>    }))<br><br>    custom_domains_names = optional(list(string), [])<br>    origin_path          = optional(string, "/")<br>    rule_sets_names      = optional(list(string), [])<br><br>    https_redirect_enabled = optional(bool, true)<br>    link_to_default_domain = optional(bool, true)<br>  }))</pre> | `[]` | no |
+| rule\_sets | CDN FrontDoor Rule Sets and associated Rules configurations. | <pre>list(object({<br>    name                 = string<br>    custom_resource_name = optional(string)<br>    rules = optional(list(object({<br>      name                 = string<br>      custom_resource_name = optional(string)<br>      order                = number<br>      behavior_on_match    = optional(string, "Continue")<br><br>      actions = object({<br>        url_rewrite_action = optional(object({<br>          source_pattern          = optional(string)<br>          destination             = optional(string)<br>          preserve_unmatched_path = optional(bool, false)<br>        }))<br>        url_redirect_action = optional(object({<br>          redirect_type        = string<br>          destination_hostname = string<br>          redirect_protocol    = optional(string, "MatchRequest")<br>          destination_path     = optional(string, "")<br>          query_string         = optional(string, "")<br>          destination_fragment = optional(string, "")<br>        }))<br>        route_configuration_override_action = optional(object({<br>          cache_duration                = optional(string, "1.12:00:00")<br>          cdn_frontdoor_origin_group_id = optional(string)<br>          forwarding_protocol           = optional(string, "MatchRequest")<br>          query_string_caching_behavior = optional(string, "IgnoreQueryString")<br>          query_string_parameters       = optional(list(string))<br>          compression_enabled           = optional(bool, false)<br>          cache_behavior                = optional(string, "HonorOrigin")<br>        }))<br>        request_header_action = optional(object({<br>          header_action = string<br>          header_name   = string<br>          value         = optional(string)<br>        }))<br>        response_header_action = optional(object({<br>          header_action = string<br>          header_name   = string<br>          value         = optional(string)<br>        }))<br>      })<br>      conditions = optional(object({<br>        remote_address_condition = optional(object({<br>          operator         = string<br>          negate_condition = optional(bool, false)<br>          match_values     = optional(list(string))<br>        }))<br>        request_method_condition = optional(object({<br>          match_values     = list(string)<br>          operator         = optional(string, "Equal")<br>          negate_condition = optional(bool, false)<br>        }))<br>        query_string_condition = optional(object({<br>          operator         = string<br>          negate_condition = optional(bool, false)<br>          match_values     = optional(list(string))<br>          transforms       = optional(list(string), ["Lowercase"])<br>        }))<br>        post_args_condition = optional(object({<br>          post_args_name   = string<br>          operator         = string<br>          negate_condition = optional(bool, false)<br>          match_values     = optional(list(string))<br>          transforms       = optional(list(string), ["Lowercase"])<br>        }))<br>        request_uri_condition = optional(object({<br>          operator         = string<br>          negate_condition = optional(bool, false)<br>          match_values     = optional(list(string))<br>          transforms       = optional(list(string), ["Lowercase"])<br>        }))<br>        request_header_condition = optional(object({<br>          header_name      = string<br>          operator         = string<br>          negate_condition = optional(bool, false)<br>          match_values     = optional(list(string))<br>          transforms       = optional(list(string), ["Lowercase"])<br>        }))<br>        request_body_condition = optional(object({<br>          operator         = string<br>          match_values     = list(string)<br>          negate_condition = optional(bool, false)<br>          transforms       = optional(list(string), ["Lowercase"])<br>        }))<br>        request_scheme_condition = optional(object({<br>          operator         = optional(string, "Equal")<br>          negate_condition = optional(bool, false)<br>          match_values     = optional(string, "HTTP")<br>        }))<br>        url_path_condition = optional(object({<br>          operator         = string<br>          negate_condition = optional(bool, false)<br>          match_values     = optional(list(string))<br>          transforms       = optional(list(string), ["Lowercase"])<br>        }))<br>        url_file_extension_condition = optional(object({<br>          operator         = string<br>          negate_condition = optional(bool, false)<br>          match_values     = list(string)<br>          transforms       = optional(list(string), ["Lowercase"])<br>        }))<br>        url_filename_condition = optional(object({<br>          operator         = string<br>          match_values     = list(string)<br>          negate_condition = optional(bool, false)<br>          transforms       = optional(list(string), ["Lowercase"])<br>        }))<br>        http_version_condition = optional(object({<br>          match_values     = list(string)<br>          operator         = optional(string, "Equal")<br>          negate_condition = optional(bool, false)<br>        }))<br>        cookies_condition = optional(object({<br>          cookie_name      = string<br>          operator         = string<br>          negate_condition = optional(bool, false)<br>          match_values     = optional(list(string))<br>          transforms       = optional(list(string), ["Lowercase"])<br>        }))<br>        is_device_condition = optional(object({<br>          operator         = optional(string, "Equal")<br>          negate_condition = optional(bool, false)<br>          match_values     = optional(list(string), ["Mobile"])<br>        }))<br>        socket_address_condition = optional(object({<br>          operator         = string<br>          negate_condition = optional(bool, false)<br>          match_values     = optional(list(string))<br>        }))<br>        client_port_condition = optional(object({<br>          operator         = string<br>          negate_condition = optional(bool, false)<br>          match_values     = optional(list(string))<br>        }))<br>        server_port_condition = optional(object({<br>          operator         = string<br>          match_values     = list(string)<br>          negate_condition = optional(bool, false)<br>        }))<br>        host_name_condition = optional(object({<br>          operator     = string<br>          match_values = list(string)<br>          transforms   = optional(list(string), ["Lowercase"])<br>        }))<br>        ssl_protocol_condition = optional(object({<br>          match_values     = list(string)<br>          operator         = optional(string, "Equal")<br>          negate_condition = optional(bool, false)<br>        }))<br>      }))<br>    })), [])<br>  }))</pre> | `[]` | no |
+| sku\_name | Specifies the SKU for this CDN FrontDoor Profile. Possible values include `Standard_AzureFrontDoor` and `Premium_AzureFrontDoor`. | `string` | `"Standard_AzureFrontDoor"` | no |
+| stack | Project stack name. | `string` | n/a | yes |
+| use\_caf\_naming | Use the Azure CAF naming provider to generate default resource name. `custom_name` override this if set. Legacy default name is used if this is set to `false`. | `bool` | `true` | no |
+
+## Outputs
+
+| Name | Description |
+|------|-------------|
+| custom\_domains | CDN FrontDoor custom domains outputs. |
+| endpoints | CDN FrontDoor endpoints outputs. |
+| firewall\_policies | CDN FrontDoor firewall policies outputs. |
+| origin\_groups | CDN FrontDoor origin groups outputs. |
+| origins | CDN FrontDoor origins outputs. |
+| profile\_id | The ID of the CDN FrontDoor Profile. |
+| profile\_name | The name of the CDN FrontDoor Profile. |
+| rule\_sets | CDN FrontDoor rule sets outputs. |
+| rules | CDN FrontDoor rules outputs. |
+<!-- END_TF_DOCS -->
+## Related documentation
+
+Azure Front Door REST API: [docs.microsoft.com/en-us/rest/api/frontdoor/](https://docs.microsoft.com/en-us/rest/api/frontdoor/)
