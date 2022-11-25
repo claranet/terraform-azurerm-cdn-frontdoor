@@ -352,7 +352,7 @@ variable "firewall_policies" {
     })), [])
     managed_rules = optional(list(object({
       type    = string
-      version = string
+      version = optional(string, "1.0")
       action  = string
       exclusions = optional(list(object({
         match_variable = string
