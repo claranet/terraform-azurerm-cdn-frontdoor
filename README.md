@@ -315,7 +315,7 @@ module "frontdoor_standard" {
 
 | Name | Source | Version |
 |------|--------|---------|
-| diagnostics | claranet/diagnostic-settings/azurerm | 6.1.0 |
+| diagnostics | claranet/diagnostic-settings/azurerm | 6.2.0 |
 
 ## Resources
 
