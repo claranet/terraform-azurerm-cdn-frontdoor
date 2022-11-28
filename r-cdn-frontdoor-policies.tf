@@ -84,3 +84,31 @@ resource "azurerm_cdn_frontdoor_firewall_policy" "frontdoor_firewall_policy" {
 
   tags = merge(local.default_tags, var.extra_tags)
 }
+
+resource "azurerm_cdn_frontdoor_security_policy" "frontdoor_security_policy" {
+  for_each = try({ for security_policy in var.security_policies : security_policy.name => security_policy }, {})
+
+  name                     = coalesce(each.value.custom_resource_name, data.azurecaf_name.cdn_frontdoor_security_policy[each.key].result)
+  cdn_frontdoor_profile_id = azurerm_cdn_frontdoor_profile.frontdoor_profile.id
+
+  security_policies {
+    firewall {
+      cdn_frontdoor_firewall_policy_id = azurerm_cdn_frontdoor_firewall_policy.frontdoor_firewall_policy[each.value.firewall.firewall_policy_name].id
+      association {
+        patterns_to_match = each.value.firewall.patterns_to_match
+        dynamic "domain" {
+          for_each = try(each.value.firewall.custom_domain_names, [])
+          content {
+            cdn_frontdoor_domain_id = azurerm_cdn_frontdoor_custom_domain.frontdoor_custom_domain[domain.value].id
+          }
+        }
+        dynamic "domain" {
+          for_each = try(each.value.firewall.endpoint_names, [])
+          content {
+            cdn_frontdoor_domain_id = azurerm_cdn_frontdoor_endpoint.frontdoor_endpoint[domain.value].id
+          }
+        }
+      }
+    }
+  }
+}

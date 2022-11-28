@@ -42,3 +42,8 @@ output "firewall_policies" {
   description = "CDN FrontDoor firewall policies outputs."
   value       = azurerm_cdn_frontdoor_firewall_policy.frontdoor_firewall_policy
 }
+
+output "security_policies" {
+  description = "CDN FrontDoor security policies outputs."
+  value       = azurerm_cdn_frontdoor_security_policy.frontdoor_security_policy
+}

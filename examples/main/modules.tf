@@ -273,6 +273,19 @@ module "frontdoor_standard" {
     }
   ]
 
+  security_policies = [
+    {
+      name                 = "MySecurityPolicy"
+      custom_resource_name = "MyBetterNamedSecurityPolicy"
+      firewall = {
+        firewall_policy_name = "test"
+        patterns_to_match    = ["/*"]
+        custom_domain_names  = ["www"]
+        endpoint_names       = ["web", "azure"]
+      }
+    }
+  ]
+
   extra_tags = {
     foo = "bar"
   }
