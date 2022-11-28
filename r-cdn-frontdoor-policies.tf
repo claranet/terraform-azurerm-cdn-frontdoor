@@ -1,7 +1,7 @@
 resource "azurerm_cdn_frontdoor_firewall_policy" "frontdoor_firewall_policy" {
   for_each = try({ for firewall_policy in var.firewall_policies : firewall_policy.name => firewall_policy }, {})
 
-  name                              = coalesce(each.value.custom_resource_name, data.azurecaf_name.frontdoor_firewall_policy[each.key].result)
+  name                              = coalesce(each.value.custom_resource_name, data.azurecaf_name.cdn_frontdoor_firewall_policy[each.key].result)
   resource_group_name               = var.resource_group_name
   sku_name                          = var.sku_name
   enabled                           = each.value.enabled
