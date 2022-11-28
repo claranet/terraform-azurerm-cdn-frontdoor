@@ -27,7 +27,7 @@ module "logs" {
   resource_group_name = module.rg.resource_group_name
 }
 
-module "frontdoor_standard" {
+module "cdn_frontdoor" {
 
   source  = "claranet/cdn-frontdoor/azurerm"
   version = "x.x.x"

@@ -2,7 +2,7 @@ module "diagnostics" {
   source  = "claranet/diagnostic-settings/azurerm"
   version = "6.2.0"
 
-  resource_id = azurerm_cdn_frontdoor_profile.frontdoor_profile.id
+  resource_id = azurerm_cdn_frontdoor_profile.cdn_frontdoor_profile.id
 
   logs_destinations_ids = var.logs_destinations_ids
   log_categories        = var.logs_categories

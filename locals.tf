@@ -1,19 +1,19 @@
 locals {
   origins_names_per_route = {
     for route in var.routes : route.name => [
-      for origin in route.origins_names : azurerm_cdn_frontdoor_origin.frontdoor_origin[origin].id
+      for origin in route.origins_names : azurerm_cdn_frontdoor_origin.cdn_frontdoor_origin[origin].id
     ]
   }
 
   custom_domains_per_route = {
     for route in var.routes : route.name => [
-      for cd in route.custom_domains_names : azurerm_cdn_frontdoor_custom_domain.frontdoor_custom_domain[cd].id
+      for cd in route.custom_domains_names : azurerm_cdn_frontdoor_custom_domain.cdn_frontdoor_custom_domain[cd].id
     ]
   }
 
   rule_sets_per_route = {
     for route in var.routes : route.name => [
-      for rs in route.rule_sets_names : azurerm_cdn_frontdoor_rule_set.frontdoor_rule_set[rs].id
+      for rs in route.rule_sets_names : azurerm_cdn_frontdoor_rule_set.cdn_frontdoor_rule_set[rs].id
     ]
   }
 

@@ -52,7 +52,7 @@ module "logs" {
   resource_group_name = module.rg.resource_group_name
 }
 
-module "frontdoor_standard" {
+module "cdn_frontdoor" {
 
   source  = "claranet/cdn-frontdoor/azurerm"
   version = "x.x.x"
@@ -334,16 +334,16 @@ module "frontdoor_standard" {
 
 | Name | Type |
 |------|------|
-| [azurerm_cdn_frontdoor_custom_domain.frontdoor_custom_domain](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/cdn_frontdoor_custom_domain) | resource |
-| [azurerm_cdn_frontdoor_endpoint.frontdoor_endpoint](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/cdn_frontdoor_endpoint) | resource |
-| [azurerm_cdn_frontdoor_firewall_policy.frontdoor_firewall_policy](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/cdn_frontdoor_firewall_policy) | resource |
-| [azurerm_cdn_frontdoor_origin.frontdoor_origin](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/cdn_frontdoor_origin) | resource |
-| [azurerm_cdn_frontdoor_origin_group.frontdoor_origin_group](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/cdn_frontdoor_origin_group) | resource |
-| [azurerm_cdn_frontdoor_profile.frontdoor_profile](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/cdn_frontdoor_profile) | resource |
-| [azurerm_cdn_frontdoor_route.frontdoor_route](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/cdn_frontdoor_route) | resource |
-| [azurerm_cdn_frontdoor_rule.frontdoor_rule](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/cdn_frontdoor_rule) | resource |
-| [azurerm_cdn_frontdoor_rule_set.frontdoor_rule_set](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/cdn_frontdoor_rule_set) | resource |
-| [azurerm_cdn_frontdoor_security_policy.frontdoor_security_policy](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/cdn_frontdoor_security_policy) | resource |
+| [azurerm_cdn_frontdoor_custom_domain.cdn_frontdoor_custom_domain](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/cdn_frontdoor_custom_domain) | resource |
+| [azurerm_cdn_frontdoor_endpoint.cdn_frontdoor_endpoint](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/cdn_frontdoor_endpoint) | resource |
+| [azurerm_cdn_frontdoor_firewall_policy.cdn_frontdoor_firewall_policy](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/cdn_frontdoor_firewall_policy) | resource |
+| [azurerm_cdn_frontdoor_origin.cdn_frontdoor_origin](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/cdn_frontdoor_origin) | resource |
+| [azurerm_cdn_frontdoor_origin_group.cdn_frontdoor_origin_group](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/cdn_frontdoor_origin_group) | resource |
+| [azurerm_cdn_frontdoor_profile.cdn_frontdoor_profile](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/cdn_frontdoor_profile) | resource |
+| [azurerm_cdn_frontdoor_route.cdn_frontdoor_route](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/cdn_frontdoor_route) | resource |
+| [azurerm_cdn_frontdoor_rule.cdn_frontdoor_rule](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/cdn_frontdoor_rule) | resource |
+| [azurerm_cdn_frontdoor_rule_set.cdn_frontdoor_rule_set](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/cdn_frontdoor_rule_set) | resource |
+| [azurerm_cdn_frontdoor_security_policy.cdn_frontdoor_security_policy](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/cdn_frontdoor_security_policy) | resource |
 | [azurecaf_name.cdn_frontdoor_custom_domain](https://registry.terraform.io/providers/aztfmod/azurecaf/latest/docs/data-sources/name) | data source |
 | [azurecaf_name.cdn_frontdoor_endpoint](https://registry.terraform.io/providers/aztfmod/azurecaf/latest/docs/data-sources/name) | data source |
 | [azurecaf_name.cdn_frontdoor_firewall_policy](https://registry.terraform.io/providers/aztfmod/azurecaf/latest/docs/data-sources/name) | data source |
@@ -359,6 +359,7 @@ module "frontdoor_standard" {
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
+| cdn\_frontdoor\_profile\_name | Specifies the name of the FrontDoor Profile. | `string` | `""` | no |
 | client\_name | Client name/account used in naming. | `string` | n/a | yes |
 | custom\_diagnostic\_settings\_name | Custom name of the diagnostics settings, name will be 'default' if not set. | `string` | `"default"` | no |
 | custom\_domains | CDN FrontDoor Custom Domains configurations. | <pre>list(object({<br>    name                 = string<br>    custom_resource_name = optional(string)<br>    host_name            = string<br>    dns_zone_id          = optional(string)<br>    tls = optional(object({<br>      certificate_type        = optional(string, "ManagedCertificate")<br>      minimum_tls_version     = optional(string, "TLS12")<br>      cdn_frontdoor_secret_id = optional(string)<br>    }), {})<br>  }))</pre> | `[]` | no |
@@ -367,7 +368,6 @@ module "frontdoor_standard" {
 | environment | Project environment. | `string` | n/a | yes |
 | extra\_tags | Extra tags to add. | `map(string)` | `{}` | no |
 | firewall\_policies | CDN Frontdoor Firewall Policies configurations. | <pre>list(object({<br>    name                              = string<br>    custom_resource_name              = optional(string)<br>    enabled                           = optional(bool, true)<br>    mode                              = optional(string, "Prevention")<br>    redirect_url                      = optional(string)<br>    custom_block_response_status_code = optional(number)<br>    custom_block_response_body        = optional(string)<br>    custom_rules = optional(list(object({<br>      name                           = string<br>      action                         = string<br>      enabled                        = optional(bool, true)<br>      priority                       = number<br>      type                           = string<br>      rate_limit_duration_in_minutes = optional(number, 1)<br>      rate_limit_threshold           = optional(number, 10)<br>      match_conditions = list(object({<br>        match_variable   = string<br>        match_values     = list(string)<br>        operator         = string<br>        selector         = optional(string)<br>        negate_condition = optional(bool)<br>        transforms       = optional(list(string), [])<br>      }))<br>    })), [])<br>    managed_rules = optional(list(object({<br>      type    = string<br>      version = optional(string, "1.0")<br>      action  = string<br>      exclusions = optional(list(object({<br>        match_variable = string<br>        operator       = string<br>        selector       = string<br>      })), [])<br>      overrides = optional(list(object({<br>        rule_group_name = string<br>        exclusions = optional(list(object({<br>          match_variable = string<br>          operator       = string<br>          selector       = string<br>        })), [])<br>        rules = optional(list(object({<br>          rule_id = string<br>          action  = string<br>          enabled = optional(bool, true)<br>          exclusions = optional(list(object({<br>            match_variable = string<br>            operator       = string<br>            selector       = string<br>        })), []) })), [])<br>      })), [])<br>    })), [])<br>  }))</pre> | `[]` | no |
-| frontdoor\_profile\_name | Specifies the name of the FrontDoor Profile. | `string` | `""` | no |
 | logs\_categories | Log categories to send to destinations. | `list(string)` | `null` | no |
 | logs\_destinations\_ids | List of destination resources IDs for logs diagnostics destination. Can be Storage Account, Log Analytics Workspace and Event Hub. No more than one of each can be set. Empty list to disable logging. | `list(string)` | n/a | yes |
 | logs\_metrics\_categories | Metrics categories to send to destinations. | `list(string)` | `null` | no |

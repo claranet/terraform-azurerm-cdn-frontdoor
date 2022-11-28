@@ -1,17 +1,17 @@
-resource "azurerm_cdn_frontdoor_rule_set" "frontdoor_rule_set" {
+resource "azurerm_cdn_frontdoor_rule_set" "cdn_frontdoor_rule_set" {
   for_each = try({ for rule_set in var.rule_sets : rule_set.name => rule_set }, {})
 
   name                     = coalesce(each.value.custom_resource_name, data.azurecaf_name.cdn_frontdoor_rule_set[each.key].result)
-  cdn_frontdoor_profile_id = azurerm_cdn_frontdoor_profile.frontdoor_profile.id
+  cdn_frontdoor_profile_id = azurerm_cdn_frontdoor_profile.cdn_frontdoor_profile.id
 }
 
-resource "azurerm_cdn_frontdoor_rule" "frontdoor_rule" {
-  depends_on = [azurerm_cdn_frontdoor_origin_group.frontdoor_origin_group, azurerm_cdn_frontdoor_origin.frontdoor_origin]
+resource "azurerm_cdn_frontdoor_rule" "cdn_frontdoor_rule" {
+  depends_on = [azurerm_cdn_frontdoor_origin_group.cdn_frontdoor_origin_group, azurerm_cdn_frontdoor_origin.cdn_frontdoor_origin]
 
   for_each = try({ for rule in local.rules_per_rule_set : format("%s.%s", rule.rule_set_name, rule.name) => rule }, {})
 
   name                      = coalesce(each.value.custom_resource_name, data.azurecaf_name.cdn_frontdoor_rule[each.key].result)
-  cdn_frontdoor_rule_set_id = azurerm_cdn_frontdoor_rule_set.frontdoor_rule_set[each.value.rule_set_name].id
+  cdn_frontdoor_rule_set_id = azurerm_cdn_frontdoor_rule_set.cdn_frontdoor_rule_set[each.value.rule_set_name].id
   order                     = each.value.order
   behavior_on_match         = each.value.behavior_on_match
 
