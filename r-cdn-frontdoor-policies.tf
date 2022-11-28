@@ -93,17 +93,17 @@ resource "azurerm_cdn_frontdoor_security_policy" "cdn_frontdoor_security_policy"
 
   security_policies {
     firewall {
-      cdn_frontdoor_firewall_policy_id = azurerm_cdn_frontdoor_firewall_policy.cdn_frontdoor_firewall_policy[each.value.firewall.firewall_policy_name].id
+      cdn_frontdoor_firewall_policy_id = azurerm_cdn_frontdoor_firewall_policy.cdn_frontdoor_firewall_policy[each.value.firewall_policy_name].id
       association {
-        patterns_to_match = each.value.firewall.patterns_to_match
+        patterns_to_match = each.value.patterns_to_match
         dynamic "domain" {
-          for_each = try(each.value.firewall.custom_domain_names, [])
+          for_each = try(each.value.custom_domain_names, [])
           content {
             cdn_frontdoor_domain_id = azurerm_cdn_frontdoor_custom_domain.cdn_frontdoor_custom_domain[domain.value].id
           }
         }
         dynamic "domain" {
-          for_each = try(each.value.firewall.endpoint_names, [])
+          for_each = try(each.value.endpoint_names, [])
           content {
             cdn_frontdoor_domain_id = azurerm_cdn_frontdoor_endpoint.cdn_frontdoor_endpoint[domain.value].id
           }
