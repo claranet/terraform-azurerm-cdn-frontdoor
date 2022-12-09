@@ -1,4 +1,4 @@
-# Unreleased
+# v7.1.0 - 2022-12-09
 
 Added
   * AZ-918: Add `azurerm_cdn_frontdoor_security_policy` resource
