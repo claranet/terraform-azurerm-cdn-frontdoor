@@ -1,7 +1,7 @@
-resource "azurerm_cdn_frontdoor_firewall_policy" "frontdoor_firewall_policy" {
+resource "azurerm_cdn_frontdoor_firewall_policy" "cdn_frontdoor_firewall_policy" {
   for_each = try({ for firewall_policy in var.firewall_policies : firewall_policy.name => firewall_policy }, {})
 
-  name                              = coalesce(each.value.custom_resource_name, data.azurecaf_name.frontdoor_firewall_policy[each.key].result)
+  name                              = coalesce(each.value.custom_resource_name, data.azurecaf_name.cdn_frontdoor_firewall_policy[each.key].result)
   resource_group_name               = var.resource_group_name
   sku_name                          = var.sku_name
   enabled                           = each.value.enabled
@@ -83,4 +83,32 @@ resource "azurerm_cdn_frontdoor_firewall_policy" "frontdoor_firewall_policy" {
   }
 
   tags = merge(local.default_tags, var.extra_tags)
+}
+
+resource "azurerm_cdn_frontdoor_security_policy" "cdn_frontdoor_security_policy" {
+  for_each = try({ for security_policy in var.security_policies : security_policy.name => security_policy }, {})
+
+  name                     = coalesce(each.value.custom_resource_name, data.azurecaf_name.cdn_frontdoor_security_policy[each.key].result)
+  cdn_frontdoor_profile_id = azurerm_cdn_frontdoor_profile.cdn_frontdoor_profile.id
+
+  security_policies {
+    firewall {
+      cdn_frontdoor_firewall_policy_id = azurerm_cdn_frontdoor_firewall_policy.cdn_frontdoor_firewall_policy[each.value.firewall_policy_name].id
+      association {
+        patterns_to_match = each.value.patterns_to_match
+        dynamic "domain" {
+          for_each = try(each.value.custom_domain_names, [])
+          content {
+            cdn_frontdoor_domain_id = azurerm_cdn_frontdoor_custom_domain.cdn_frontdoor_custom_domain[domain.value].id
+          }
+        }
+        dynamic "domain" {
+          for_each = try(each.value.endpoint_names, [])
+          content {
+            cdn_frontdoor_domain_id = azurerm_cdn_frontdoor_endpoint.cdn_frontdoor_endpoint[domain.value].id
+          }
+        }
+      }
+    }
+  }
 }

@@ -1,4 +1,4 @@
-resource "azurerm_cdn_frontdoor_profile" "frontdoor_profile" {
+resource "azurerm_cdn_frontdoor_profile" "cdn_frontdoor_profile" {
   name                = local.frontdoor_profile_name
   resource_group_name = var.resource_group_name
   sku_name            = var.sku_name
@@ -8,22 +8,22 @@ resource "azurerm_cdn_frontdoor_profile" "frontdoor_profile" {
   tags = merge(local.default_tags, var.extra_tags)
 }
 
-resource "azurerm_cdn_frontdoor_endpoint" "frontdoor_endpoint" {
+resource "azurerm_cdn_frontdoor_endpoint" "cdn_frontdoor_endpoint" {
   for_each = try({ for endpoint in var.endpoints : endpoint.name => endpoint }, {})
 
-  name                     = coalesce(each.value.custom_resource_name, data.azurecaf_name.frontdoor_endpoint[each.key].result)
-  cdn_frontdoor_profile_id = azurerm_cdn_frontdoor_profile.frontdoor_profile.id
+  name                     = coalesce(each.value.custom_resource_name, data.azurecaf_name.cdn_frontdoor_endpoint[each.key].result)
+  cdn_frontdoor_profile_id = azurerm_cdn_frontdoor_profile.cdn_frontdoor_profile.id
 
   enabled = each.value.enabled
 
   tags = merge(local.default_tags, var.extra_tags)
 }
 
-resource "azurerm_cdn_frontdoor_custom_domain" "frontdoor_custom_domain" {
+resource "azurerm_cdn_frontdoor_custom_domain" "cdn_frontdoor_custom_domain" {
   for_each = try({ for custom_domain in var.custom_domains : custom_domain.name => custom_domain }, {})
 
-  name                     = coalesce(each.value.custom_resource_name, data.azurecaf_name.frontdoor_custom_domain[each.key].result)
-  cdn_frontdoor_profile_id = azurerm_cdn_frontdoor_profile.frontdoor_profile.id
+  name                     = coalesce(each.value.custom_resource_name, data.azurecaf_name.cdn_frontdoor_custom_domain[each.key].result)
+  cdn_frontdoor_profile_id = azurerm_cdn_frontdoor_profile.cdn_frontdoor_profile.id
   dns_zone_id              = each.value.dns_zone_id
   host_name                = each.value.host_name
 
@@ -37,14 +37,14 @@ resource "azurerm_cdn_frontdoor_custom_domain" "frontdoor_custom_domain" {
   }
 }
 
-resource "azurerm_cdn_frontdoor_route" "frontdoor_route" {
+resource "azurerm_cdn_frontdoor_route" "cdn_frontdoor_route" {
   for_each = try({ for route in var.routes : route.name => route }, {})
 
-  name    = coalesce(each.value.custom_resource_name, data.azurecaf_name.frontdoor_route[each.key].result)
+  name    = coalesce(each.value.custom_resource_name, data.azurecaf_name.cdn_frontdoor_route[each.key].result)
   enabled = each.value.enabled
 
-  cdn_frontdoor_endpoint_id     = azurerm_cdn_frontdoor_endpoint.frontdoor_endpoint[each.value.endpoint_name].id
-  cdn_frontdoor_origin_group_id = azurerm_cdn_frontdoor_origin_group.frontdoor_origin_group[each.value.origin_group_name].id
+  cdn_frontdoor_endpoint_id     = azurerm_cdn_frontdoor_endpoint.cdn_frontdoor_endpoint[each.value.endpoint_name].id
+  cdn_frontdoor_origin_group_id = azurerm_cdn_frontdoor_origin_group.cdn_frontdoor_origin_group[each.value.origin_group_name].id
 
   cdn_frontdoor_origin_ids = local.origins_names_per_route[each.value.name]
 

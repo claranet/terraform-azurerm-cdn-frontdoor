@@ -18,7 +18,7 @@ variable "use_caf_naming" {
 }
 
 # Custom naming override
-variable "frontdoor_profile_name" {
+variable "cdn_frontdoor_profile_name" {
   description = "Specifies the name of the FrontDoor Profile."
   type        = string
   default     = ""

@@ -27,7 +27,7 @@ module "logs" {
   resource_group_name = module.rg.resource_group_name
 }
 
-module "frontdoor_standard" {
+module "cdn_frontdoor" {
 
   source  = "claranet/cdn-frontdoor/azurerm"
   version = "x.x.x"
@@ -270,6 +270,17 @@ module "frontdoor_standard" {
         }
       ]
 
+    }
+  ]
+
+  security_policies = [
+    {
+      name                 = "MySecurityPolicy"
+      custom_resource_name = "MyBetterNamedSecurityPolicy"
+      firewall_policy_name = "test"
+      patterns_to_match    = ["/*"]
+      custom_domain_names  = ["www"]
+      endpoint_names       = ["web", "azure"]
     }
   ]
 

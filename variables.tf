@@ -380,3 +380,27 @@ variable "firewall_policies" {
   }))
   default = []
 }
+
+# ------------------
+# CDN FrontDoor Security Policies
+variable "security_policies" {
+  description = "CDN FrontDoor Security policies configurations."
+  type = list(object({
+    name                 = string
+    custom_resource_name = optional(string)
+    firewall_policy_name = string
+    patterns_to_match    = optional(list(string), ["/*"])
+    custom_domain_names  = optional(list(string), [])
+    endpoint_names       = optional(list(string), [])
+  }))
+  default = []
+
+  validation {
+    condition = alltrue([
+      for security_policy in var.security_policies :
+      security_policy.custom_domain_names != null ||
+      security_policy.endpoint_names != null
+    ])
+    error_message = "At least one custom domain name or endpoint name must be provided for all the security policies."
+  }
+}
