@@ -145,7 +145,7 @@ variable "routes" {
     supported_protocols = optional(list(string), ["Http", "Https"])
     cache = optional(object({
       query_string_caching_behavior = optional(string, "IgnoreQueryString")
-      query_strings                 = optional(string)
+      query_strings                 = optional(list(string))
       compression_enabled           = optional(bool, false)
       content_types_to_compress     = optional(list(string))
     }))
