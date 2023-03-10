@@ -1,3 +1,8 @@
+# Unreleased
+
+Fixed
+  * AZ-1024: Fix Cache Query string is a list of strings
+
 # v7.1.0 - 2022-12-09
 
 Added
