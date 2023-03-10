@@ -1,4 +1,4 @@
-# Unreleased
+# v7.1.1 - 2023-03-10
 
 Fixed
   * AZ-1024: Fix Cache Query string is a list of strings
