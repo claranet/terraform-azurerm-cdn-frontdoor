@@ -60,7 +60,6 @@ module "logs" {
 }
 
 module "cdn_frontdoor" {
-
   source  = "claranet/cdn-frontdoor/azurerm"
   version = "x.x.x"
 
@@ -74,7 +73,7 @@ module "cdn_frontdoor" {
 
   logs_destinations_ids = [
     module.logs.log_analytics_workspace_id,
-    module.logs.logs_storage_account_id
+    module.logs.logs_storage_account_id,
   ]
 
   endpoints = [
@@ -84,7 +83,7 @@ module "cdn_frontdoor" {
     {
       name    = "azure"
       enabled = false
-    }
+    },
   ]
 
   origin_groups = [
@@ -108,7 +107,7 @@ module "cdn_frontdoor" {
         protocol            = "Https"
         request_type        = "GET"
       }
-    }
+    },
   ]
 
   origins = [
@@ -123,15 +122,13 @@ module "cdn_frontdoor" {
       origin_group_name              = "contoso2"
       certificate_name_check_enabled = false
       host_name                      = "azure.contoso.com"
-    }
+    },
   ]
 
-  custom_domains = [
-    {
-      name      = "www"
-      host_name = "www.contoso.com"
-    }
-  ]
+  custom_domains = [{
+    name      = "www"
+    host_name = "www.contoso.com"
+  }]
 
   routes = [
     {
@@ -154,167 +151,165 @@ module "cdn_frontdoor" {
       patterns_to_match   = ["/contoso"]
       supported_protocols = ["Http", "Https"]
       rule_sets_names     = ["my_rule_set", "my_rule_set2"]
-    }
+    },
   ]
 
   rule_sets = [
     {
       name                 = "my_rule_set"
       custom_resource_name = "custom_rule"
-      rules = [
-        {
-          name                 = "redirect"
-          custom_resource_name = "myrulename"
-          order                = 1
-          actions = {
-            url_rewrite_action = {
-              source_pattern = "/"
-              destination    = "/contoso"
-            }
-          }
-          conditions = {
-            is_device_condition = {
-              operator     = "Equal"
-              match_values = ["Desktop"]
-            }
-          }
+
+      rules = [{
+        name                 = "redirect"
+        custom_resource_name = "myrulename"
+        order                = 1
+        actions = {
+          response_header_action = [
+            {
+              header_action = "Overwrite"
+              header_name   = "Access-Control-Allow-Origin"
+              value         = "https://www.foo.bar.fr"
+            },
+            {
+              header_action = "Overwrite"
+              header_name   = "Access-Control-Allow-Credentials"
+              value         = "true"
+            },
+            {
+              header_action = "Overwrite"
+              header_name   = "Access-Control-Allow-Headers"
+              value         = "Authorization, Content-Type, ocp-apim-subscription-key"
+            },
+            {
+              header_action = "Overwrite"
+              header_name   = "Access-Control-Allow-Methods"
+              value         = "POST,PUT,GET,DELETE,OPTIONS"
+            },
+          ]
+          url_rewrite_action = [{
+            source_pattern = "/"
+            destination    = "/contoso"
+          }]
         }
-      ]
+        conditions = {
+          is_device_condition = [{
+            operator     = "Equal"
+            match_values = ["Desktop"]
+          }]
+        }
+      }]
     },
     {
       name                 = "my_rule_set2"
       custom_resource_name = "custom_rule2"
-    }
+    },
   ]
 
-  firewall_policies = [
-    {
-      name                              = "test"
-      enabled                           = true
-      mode                              = "Prevention"
-      redirect_url                      = "https://www.contoso.com"
-      custom_block_response_status_code = 403
-      custom_block_response_body        = "PGh0bWw+CjxoZWFkZXI+PHRpdGxlPkhlbGxvPC90aXRsZT48L2hlYWRlcj4KPGJvZHk+CkhlbGxvIHdvcmxkCjwvYm9keT4KPC9odG1sPg=="
+  firewall_policies = [{
+    name                              = "test"
+    enabled                           = true
+    mode                              = "Prevention"
+    redirect_url                      = "https://www.contoso.com"
+    custom_block_response_status_code = 403
+    custom_block_response_body        = "PGh0bWw+CjxoZWFkZXI+PHRpdGxlPkhlbGxvPC90aXRsZT48L2hlYWRlcj4KPGJvZHk+CkhlbGxvIHdvcmxkCjwvYm9keT4KPC9odG1sPg=="
 
-      custom_rules = [
-        {
-          name                           = "Rule1"
-          enabled                        = true
-          priority                       = 1
-          rate_limit_duration_in_minutes = 1
-          rate_limit_threshold           = 10
-          type                           = "MatchRule"
-          action                         = "Block"
+    custom_rules = [
+      {
+        name                           = "Rule1"
+        enabled                        = true
+        priority                       = 1
+        rate_limit_duration_in_minutes = 1
+        rate_limit_threshold           = 10
+        type                           = "MatchRule"
+        action                         = "Block"
+        match_conditions = [{
+          match_variable     = "RemoteAddr"
+          operator           = "IPMatch"
+          negation_condition = false
+          match_values       = ["10.0.1.0/24", "10.0.0.0/24"]
+        }]
+      },
+      {
+        name                           = "Rule2"
+        enabled                        = true
+        priority                       = 2
+        rate_limit_duration_in_minutes = 1
+        rate_limit_threshold           = 10
+        type                           = "MatchRule"
+        action                         = "Block"
+        match_conditions = [
+          {
+            match_variable     = "RemoteAddr"
+            operator           = "IPMatch"
+            negation_condition = false
+            match_values       = ["192.168.1.0/24"]
+          },
+          {
+            match_variable     = "RequestHeader"
+            selector           = "UserAgent"
+            operator           = "Contains"
+            negation_condition = false
+            match_values       = ["windows"]
+            transforms         = ["Lowercase", "Trim"]
+          },
+        ]
+      },
+    ]
 
-          match_conditions = [
-            {
-              match_variable     = "RemoteAddr"
-              operator           = "IPMatch"
-              negation_condition = false
-              match_values       = ["10.0.1.0/24", "10.0.0.0/24"]
-            }
-          ]
-        },
-        {
-          name                           = "Rule2"
-          enabled                        = true
-          priority                       = 2
-          rate_limit_duration_in_minutes = 1
-          rate_limit_threshold           = 10
-          type                           = "MatchRule"
-          action                         = "Block"
-
-          match_conditions = [
-            {
-              match_variable     = "RemoteAddr"
-              operator           = "IPMatch"
-              negation_condition = false
-              match_values       = ["192.168.1.0/24"]
-            },
-            {
-              match_variable     = "RequestHeader"
-              selector           = "UserAgent"
-              operator           = "Contains"
-              negation_condition = false
-              match_values       = ["windows"]
-              transforms         = ["Lowercase", "Trim"]
-            }
-          ]
-        }
-      ]
-
-      managed_rules = [
-        {
-          type    = "DefaultRuleSet"
-          version = "1.0"
-          action  = "Log"
-
-          exclusions = [
-            {
+    managed_rules = [
+      {
+        type    = "DefaultRuleSet"
+        version = "1.0"
+        action  = "Log"
+        exclusions = [{
+          match_variable = "QueryStringArgNames"
+          operator       = "Equals"
+          selector       = "not_suspicious"
+        }]
+        overrides = [
+          {
+            rule_group_name = "PHP"
+            rules = [{
+              rule_id = "933100"
+              enabled = false
+              action  = "Block"
+            }]
+          },
+          {
+            rule_group_name = "SQLI"
+            exclusions = [{
               match_variable = "QueryStringArgNames"
               operator       = "Equals"
-              selector       = "not_suspicious"
-            }
-          ]
-
-          overrides = [
-            {
-              rule_group_name = "PHP"
-
-              rules = [
-                {
-                  rule_id = "933100"
-                  enabled = false
-                  action  = "Block"
-                }
-              ]
-            },
-            {
-              rule_group_name = "SQLI"
-
+              selector       = "really_not_suspicious"
+            }]
+            rules = [{
+              rule_id = "942200"
+              action  = "Block"
               exclusions = [{
                 match_variable = "QueryStringArgNames"
                 operator       = "Equals"
-                selector       = "really_not_suspicious"
-                }
-              ]
+                selector       = "innocent"
+              }]
+            }]
+          },
+        ]
+      },
+      {
+        type    = "Microsoft_BotManagerRuleSet"
+        version = "1.0"
+        action  = "Log"
+      },
+    ]
+  }]
 
-              rules = [{
-                rule_id = "942200"
-                action  = "Block"
-
-                exclusions = [
-                  {
-                    match_variable = "QueryStringArgNames"
-                    operator       = "Equals"
-                    selector       = "innocent"
-                  }
-                ]
-                }
-              ]
-            }
-          ]
-        },
-        {
-          type    = "Microsoft_BotManagerRuleSet"
-          version = "1.0"
-          action  = "Log"
-        }
-      ]
-
-    }
-  ]
-
-  security_policies = [
-    {
-      name                 = "MySecurityPolicy"
-      custom_resource_name = "MyBetterNamedSecurityPolicy"
-      firewall_policy_name = "test"
-      patterns_to_match    = ["/*"]
-      custom_domain_names  = ["www"]
-      endpoint_names       = ["web", "azure"]
-    }
-  ]
+  security_policies = [{
+    name                 = "MySecurityPolicy"
+    custom_resource_name = "MyBetterNamedSecurityPolicy"
+    firewall_policy_name = "test"
+    patterns_to_match    = ["/*"]
+    custom_domain_names  = ["www"]
+    endpoint_names       = ["web", "azure"]
+  }]
 
   extra_tags = {
     foo = "bar"
@@ -384,7 +379,7 @@ module "cdn_frontdoor" {
 | resource\_group\_name | Resource group name. | `string` | n/a | yes |
 | response\_timeout\_seconds | Specifies the maximum response timeout in seconds. Possible values are between `16` and `240` seconds (inclusive). | `number` | `120` | no |
 | routes | CDN FrontDoor Routes configurations. | <pre>list(object({<br>    name                 = string<br>    custom_resource_name = optional(string)<br>    enabled              = optional(bool, true)<br><br>    endpoint_name     = string<br>    origin_group_name = string<br>    origins_names     = list(string)<br><br>    forwarding_protocol = optional(string, "HttpsOnly")<br>    patterns_to_match   = optional(list(string), ["/*"])<br>    supported_protocols = optional(list(string), ["Http", "Https"])<br>    cache = optional(object({<br>      query_string_caching_behavior = optional(string, "IgnoreQueryString")<br>      query_strings                 = optional(list(string))<br>      compression_enabled           = optional(bool, false)<br>      content_types_to_compress     = optional(list(string))<br>    }))<br><br>    custom_domains_names = optional(list(string), [])<br>    origin_path          = optional(string, "/")<br>    rule_sets_names      = optional(list(string), [])<br><br>    https_redirect_enabled = optional(bool, true)<br>    link_to_default_domain = optional(bool, true)<br>  }))</pre> | `[]` | no |
-| rule\_sets | CDN FrontDoor Rule Sets and associated Rules configurations. | <pre>list(object({<br>    name                 = string<br>    custom_resource_name = optional(string)<br>    rules = optional(list(object({<br>      name                 = string<br>      custom_resource_name = optional(string)<br>      order                = number<br>      behavior_on_match    = optional(string, "Continue")<br><br>      actions = object({<br>        url_rewrite_action = optional(object({<br>          source_pattern          = optional(string)<br>          destination             = optional(string)<br>          preserve_unmatched_path = optional(bool, false)<br>        }))<br>        url_redirect_action = optional(object({<br>          redirect_type        = string<br>          destination_hostname = string<br>          redirect_protocol    = optional(string, "MatchRequest")<br>          destination_path     = optional(string, "")<br>          query_string         = optional(string, "")<br>          destination_fragment = optional(string, "")<br>        }))<br>        route_configuration_override_action = optional(object({<br>          cache_duration                = optional(string, "1.12:00:00")<br>          cdn_frontdoor_origin_group_id = optional(string)<br>          forwarding_protocol           = optional(string, "MatchRequest")<br>          query_string_caching_behavior = optional(string, "IgnoreQueryString")<br>          query_string_parameters       = optional(list(string))<br>          compression_enabled           = optional(bool, false)<br>          cache_behavior                = optional(string, "HonorOrigin")<br>        }))<br>        request_header_action = optional(object({<br>          header_action = string<br>          header_name   = string<br>          value         = optional(string)<br>        }))<br>        response_header_action = optional(object({<br>          header_action = string<br>          header_name   = string<br>          value         = optional(string)<br>        }))<br>      })<br>      conditions = optional(object({<br>        remote_address_condition = optional(object({<br>          operator         = string<br>          negate_condition = optional(bool, false)<br>          match_values     = optional(list(string))<br>        }))<br>        request_method_condition = optional(object({<br>          match_values     = list(string)<br>          operator         = optional(string, "Equal")<br>          negate_condition = optional(bool, false)<br>        }))<br>        query_string_condition = optional(object({<br>          operator         = string<br>          negate_condition = optional(bool, false)<br>          match_values     = optional(list(string))<br>          transforms       = optional(list(string), ["Lowercase"])<br>        }))<br>        post_args_condition = optional(object({<br>          post_args_name   = string<br>          operator         = string<br>          negate_condition = optional(bool, false)<br>          match_values     = optional(list(string))<br>          transforms       = optional(list(string), ["Lowercase"])<br>        }))<br>        request_uri_condition = optional(object({<br>          operator         = string<br>          negate_condition = optional(bool, false)<br>          match_values     = optional(list(string))<br>          transforms       = optional(list(string), ["Lowercase"])<br>        }))<br>        request_header_condition = optional(object({<br>          header_name      = string<br>          operator         = string<br>          negate_condition = optional(bool, false)<br>          match_values     = optional(list(string))<br>          transforms       = optional(list(string), ["Lowercase"])<br>        }))<br>        request_body_condition = optional(object({<br>          operator         = string<br>          match_values     = list(string)<br>          negate_condition = optional(bool, false)<br>          transforms       = optional(list(string), ["Lowercase"])<br>        }))<br>        request_scheme_condition = optional(object({<br>          operator         = optional(string, "Equal")<br>          negate_condition = optional(bool, false)<br>          match_values     = optional(string, "HTTP")<br>        }))<br>        url_path_condition = optional(object({<br>          operator         = string<br>          negate_condition = optional(bool, false)<br>          match_values     = optional(list(string))<br>          transforms       = optional(list(string), ["Lowercase"])<br>        }))<br>        url_file_extension_condition = optional(object({<br>          operator         = string<br>          negate_condition = optional(bool, false)<br>          match_values     = list(string)<br>          transforms       = optional(list(string), ["Lowercase"])<br>        }))<br>        url_filename_condition = optional(object({<br>          operator         = string<br>          match_values     = list(string)<br>          negate_condition = optional(bool, false)<br>          transforms       = optional(list(string), ["Lowercase"])<br>        }))<br>        http_version_condition = optional(object({<br>          match_values     = list(string)<br>          operator         = optional(string, "Equal")<br>          negate_condition = optional(bool, false)<br>        }))<br>        cookies_condition = optional(object({<br>          cookie_name      = string<br>          operator         = string<br>          negate_condition = optional(bool, false)<br>          match_values     = optional(list(string))<br>          transforms       = optional(list(string), ["Lowercase"])<br>        }))<br>        is_device_condition = optional(object({<br>          operator         = optional(string, "Equal")<br>          negate_condition = optional(bool, false)<br>          match_values     = optional(list(string), ["Mobile"])<br>        }))<br>        socket_address_condition = optional(object({<br>          operator         = string<br>          negate_condition = optional(bool, false)<br>          match_values     = optional(list(string))<br>        }))<br>        client_port_condition = optional(object({<br>          operator         = string<br>          negate_condition = optional(bool, false)<br>          match_values     = optional(list(string))<br>        }))<br>        server_port_condition = optional(object({<br>          operator         = string<br>          match_values     = list(string)<br>          negate_condition = optional(bool, false)<br>        }))<br>        host_name_condition = optional(object({<br>          operator     = string<br>          match_values = list(string)<br>          transforms   = optional(list(string), ["Lowercase"])<br>        }))<br>        ssl_protocol_condition = optional(object({<br>          match_values     = list(string)<br>          operator         = optional(string, "Equal")<br>          negate_condition = optional(bool, false)<br>        }))<br>      }))<br>    })), [])<br>  }))</pre> | `[]` | no |
+| rule\_sets | CDN FrontDoor Rule Sets and associated Rules configurations. | <pre>list(object({<br>    name                 = string<br>    custom_resource_name = optional(string)<br>    rules = optional(list(object({<br>      name                 = string<br>      custom_resource_name = optional(string)<br>      order                = number<br>      behavior_on_match    = optional(string, "Continue")<br><br>      actions = object({<br>        url_rewrite_action = optional(list(object({<br>          source_pattern          = optional(string)<br>          destination             = optional(string)<br>          preserve_unmatched_path = optional(bool, false)<br>        })), [])<br>        url_redirect_action = optional(list(object({<br>          redirect_type        = string<br>          destination_hostname = string<br>          redirect_protocol    = optional(string, "MatchRequest")<br>          destination_path     = optional(string, "")<br>          query_string         = optional(string, "")<br>          destination_fragment = optional(string, "")<br>        })), [])<br>        route_configuration_override_action = optional(list(object({<br>          cache_duration                = optional(string, "1.12:00:00")<br>          cdn_frontdoor_origin_group_id = optional(string)<br>          forwarding_protocol           = optional(string, "MatchRequest")<br>          query_string_caching_behavior = optional(string, "IgnoreQueryString")<br>          query_string_parameters       = optional(list(string))<br>          compression_enabled           = optional(bool, false)<br>          cache_behavior                = optional(string, "HonorOrigin")<br>        })), [])<br>        request_header_action = optional(list(object({<br>          header_action = string<br>          header_name   = string<br>          value         = optional(string)<br>        })), [])<br>        response_header_action = optional(list(object({<br>          header_action = string<br>          header_name   = string<br>          value         = optional(string)<br>        })), [])<br>      })<br><br>      conditions = optional(object({<br>        remote_address_condition = optional(list(object({<br>          operator         = string<br>          negate_condition = optional(bool, false)<br>          match_values     = optional(list(string))<br>        })), [])<br>        request_method_condition = optional(list(object({<br>          match_values     = list(string)<br>          operator         = optional(string, "Equal")<br>          negate_condition = optional(bool, false)<br>        })), [])<br>        query_string_condition = optional(list(object({<br>          operator         = string<br>          negate_condition = optional(bool, false)<br>          match_values     = optional(list(string))<br>          transforms       = optional(list(string), ["Lowercase"])<br>        })), [])<br>        post_args_condition = optional(list(object({<br>          post_args_name   = string<br>          operator         = string<br>          negate_condition = optional(bool, false)<br>          match_values     = optional(list(string))<br>          transforms       = optional(list(string), ["Lowercase"])<br>        })), [])<br>        request_uri_condition = optional(list(object({<br>          operator         = string<br>          negate_condition = optional(bool, false)<br>          match_values     = optional(list(string))<br>          transforms       = optional(list(string), ["Lowercase"])<br>        })), [])<br>        request_header_condition = optional(list(object({<br>          header_name      = string<br>          operator         = string<br>          negate_condition = optional(bool, false)<br>          match_values     = optional(list(string))<br>          transforms       = optional(list(string), ["Lowercase"])<br>        })), [])<br>        request_body_condition = optional(list(object({<br>          operator         = string<br>          match_values     = list(string)<br>          negate_condition = optional(bool, false)<br>          transforms       = optional(list(string), ["Lowercase"])<br>        })), [])<br>        request_scheme_condition = optional(list(object({<br>          operator         = optional(string, "Equal")<br>          negate_condition = optional(bool, false)<br>          match_values     = optional(string, "HTTP")<br>        })), [])<br>        url_path_condition = optional(list(object({<br>          operator         = string<br>          negate_condition = optional(bool, false)<br>          match_values     = optional(list(string))<br>          transforms       = optional(list(string), ["Lowercase"])<br>        })), [])<br>        url_file_extension_condition = optional(list(object({<br>          operator         = string<br>          negate_condition = optional(bool, false)<br>          match_values     = list(string)<br>          transforms       = optional(list(string), ["Lowercase"])<br>        })), [])<br>        url_filename_condition = optional(list(object({<br>          operator         = string<br>          match_values     = list(string)<br>          negate_condition = optional(bool, false)<br>          transforms       = optional(list(string), ["Lowercase"])<br>        })), [])<br>        http_version_condition = optional(list(object({<br>          match_values     = list(string)<br>          operator         = optional(string, "Equal")<br>          negate_condition = optional(bool, false)<br>        })), [])<br>        cookies_condition = optional(list(object({<br>          cookie_name      = string<br>          operator         = string<br>          negate_condition = optional(bool, false)<br>          match_values     = optional(list(string))<br>          transforms       = optional(list(string), ["Lowercase"])<br>        })), [])<br>        is_device_condition = optional(list(object({<br>          operator         = optional(string, "Equal")<br>          negate_condition = optional(bool, false)<br>          match_values     = optional(list(string), ["Mobile"])<br>        })), [])<br>        socket_address_condition = optional(list(object({<br>          operator         = string<br>          negate_condition = optional(bool, false)<br>          match_values     = optional(list(string))<br>        })), [])<br>        client_port_condition = optional(list(object({<br>          operator         = string<br>          negate_condition = optional(bool, false)<br>          match_values     = optional(list(string))<br>        })), [])<br>        server_port_condition = optional(list(object({<br>          operator         = string<br>          match_values     = list(string)<br>          negate_condition = optional(bool, false)<br>        })), [])<br>        host_name_condition = optional(list(object({<br>          operator     = string<br>          match_values = optional(list(string))<br>          transforms   = optional(list(string), ["Lowercase"])<br>        })), [])<br>        ssl_protocol_condition = optional(list(object({<br>          match_values     = list(string)<br>          operator         = optional(string, "Equal")<br>          negate_condition = optional(bool, false)<br>        })), [])<br>      }), null)<br>    })), [])<br>  }))</pre> | `[]` | no |
 | security\_policies | CDN FrontDoor Security policies configurations. | <pre>list(object({<br>    name                 = string<br>    custom_resource_name = optional(string)<br>    firewall_policy_name = string<br>    patterns_to_match    = optional(list(string), ["/*"])<br>    custom_domain_names  = optional(list(string), [])<br>    endpoint_names       = optional(list(string), [])<br>  }))</pre> | `[]` | no |
 | sku\_name | Specifies the SKU for this CDN FrontDoor Profile. Possible values include `Standard_AzureFrontDoor` and `Premium_AzureFrontDoor`. | `string` | `"Standard_AzureFrontDoor"` | no |
 | stack | Project stack name. | `string` | n/a | yes |

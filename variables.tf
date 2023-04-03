@@ -174,20 +174,20 @@ variable "rule_sets" {
       behavior_on_match    = optional(string, "Continue")
 
       actions = object({
-        url_rewrite_action = optional(object({
+        url_rewrite_action = optional(list(object({
           source_pattern          = optional(string)
           destination             = optional(string)
           preserve_unmatched_path = optional(bool, false)
-        }))
-        url_redirect_action = optional(object({
+        })), [])
+        url_redirect_action = optional(list(object({
           redirect_type        = string
           destination_hostname = string
           redirect_protocol    = optional(string, "MatchRequest")
           destination_path     = optional(string, "")
           query_string         = optional(string, "")
           destination_fragment = optional(string, "")
-        }))
-        route_configuration_override_action = optional(object({
+        })), [])
+        route_configuration_override_action = optional(list(object({
           cache_duration                = optional(string, "1.12:00:00")
           cdn_frontdoor_origin_group_id = optional(string)
           forwarding_protocol           = optional(string, "MatchRequest")
@@ -195,127 +195,128 @@ variable "rule_sets" {
           query_string_parameters       = optional(list(string))
           compression_enabled           = optional(bool, false)
           cache_behavior                = optional(string, "HonorOrigin")
-        }))
-        request_header_action = optional(object({
+        })), [])
+        request_header_action = optional(list(object({
           header_action = string
           header_name   = string
           value         = optional(string)
-        }))
-        response_header_action = optional(object({
+        })), [])
+        response_header_action = optional(list(object({
           header_action = string
           header_name   = string
           value         = optional(string)
-        }))
+        })), [])
       })
+
       conditions = optional(object({
-        remote_address_condition = optional(object({
+        remote_address_condition = optional(list(object({
           operator         = string
           negate_condition = optional(bool, false)
           match_values     = optional(list(string))
-        }))
-        request_method_condition = optional(object({
+        })), [])
+        request_method_condition = optional(list(object({
           match_values     = list(string)
           operator         = optional(string, "Equal")
           negate_condition = optional(bool, false)
-        }))
-        query_string_condition = optional(object({
+        })), [])
+        query_string_condition = optional(list(object({
           operator         = string
           negate_condition = optional(bool, false)
           match_values     = optional(list(string))
           transforms       = optional(list(string), ["Lowercase"])
-        }))
-        post_args_condition = optional(object({
+        })), [])
+        post_args_condition = optional(list(object({
           post_args_name   = string
           operator         = string
           negate_condition = optional(bool, false)
           match_values     = optional(list(string))
           transforms       = optional(list(string), ["Lowercase"])
-        }))
-        request_uri_condition = optional(object({
+        })), [])
+        request_uri_condition = optional(list(object({
           operator         = string
           negate_condition = optional(bool, false)
           match_values     = optional(list(string))
           transforms       = optional(list(string), ["Lowercase"])
-        }))
-        request_header_condition = optional(object({
+        })), [])
+        request_header_condition = optional(list(object({
           header_name      = string
           operator         = string
           negate_condition = optional(bool, false)
           match_values     = optional(list(string))
           transforms       = optional(list(string), ["Lowercase"])
-        }))
-        request_body_condition = optional(object({
+        })), [])
+        request_body_condition = optional(list(object({
           operator         = string
           match_values     = list(string)
           negate_condition = optional(bool, false)
           transforms       = optional(list(string), ["Lowercase"])
-        }))
-        request_scheme_condition = optional(object({
+        })), [])
+        request_scheme_condition = optional(list(object({
           operator         = optional(string, "Equal")
           negate_condition = optional(bool, false)
           match_values     = optional(string, "HTTP")
-        }))
-        url_path_condition = optional(object({
+        })), [])
+        url_path_condition = optional(list(object({
           operator         = string
           negate_condition = optional(bool, false)
           match_values     = optional(list(string))
           transforms       = optional(list(string), ["Lowercase"])
-        }))
-        url_file_extension_condition = optional(object({
+        })), [])
+        url_file_extension_condition = optional(list(object({
           operator         = string
           negate_condition = optional(bool, false)
           match_values     = list(string)
           transforms       = optional(list(string), ["Lowercase"])
-        }))
-        url_filename_condition = optional(object({
+        })), [])
+        url_filename_condition = optional(list(object({
           operator         = string
           match_values     = list(string)
           negate_condition = optional(bool, false)
           transforms       = optional(list(string), ["Lowercase"])
-        }))
-        http_version_condition = optional(object({
+        })), [])
+        http_version_condition = optional(list(object({
           match_values     = list(string)
           operator         = optional(string, "Equal")
           negate_condition = optional(bool, false)
-        }))
-        cookies_condition = optional(object({
+        })), [])
+        cookies_condition = optional(list(object({
           cookie_name      = string
           operator         = string
           negate_condition = optional(bool, false)
           match_values     = optional(list(string))
           transforms       = optional(list(string), ["Lowercase"])
-        }))
-        is_device_condition = optional(object({
+        })), [])
+        is_device_condition = optional(list(object({
           operator         = optional(string, "Equal")
           negate_condition = optional(bool, false)
           match_values     = optional(list(string), ["Mobile"])
-        }))
-        socket_address_condition = optional(object({
+        })), [])
+        socket_address_condition = optional(list(object({
           operator         = string
           negate_condition = optional(bool, false)
           match_values     = optional(list(string))
-        }))
-        client_port_condition = optional(object({
+        })), [])
+        client_port_condition = optional(list(object({
           operator         = string
           negate_condition = optional(bool, false)
           match_values     = optional(list(string))
-        }))
-        server_port_condition = optional(object({
+        })), [])
+        server_port_condition = optional(list(object({
           operator         = string
           match_values     = list(string)
           negate_condition = optional(bool, false)
-        }))
-        host_name_condition = optional(object({
+        })), [])
+        host_name_condition = optional(list(object({
           operator     = string
-          match_values = list(string)
+          match_values = optional(list(string))
           transforms   = optional(list(string), ["Lowercase"])
-        }))
-        ssl_protocol_condition = optional(object({
+        })), [])
+        ssl_protocol_condition = optional(list(object({
           match_values     = list(string)
           operator         = optional(string, "Equal")
           negate_condition = optional(bool, false)
-        }))
-      }))
+        })), [])
+      }), null)
     })), [])
   }))
   default = []

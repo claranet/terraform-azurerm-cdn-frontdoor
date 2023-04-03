@@ -1,3 +1,8 @@
+# Unreleased
+
+Changed
+  * AZ-1048: Rework `rule_sets` rules definition
+
 # v7.1.1 - 2023-03-10
 
 Fixed
