@@ -132,7 +132,7 @@ module "cdn_frontdoor" {
         custom_resource_name = "myrulename"
         order                = 1
         actions = {
-          response_header_action = [
+          response_header_actions = [
             {
               header_action = "Overwrite"
               header_name   = "Access-Control-Allow-Origin"
@@ -154,13 +154,13 @@ module "cdn_frontdoor" {
               value         = "POST,PUT,GET,DELETE,OPTIONS"
             },
           ]
-          url_rewrite_action = [{
+          url_rewrite_actions = [{
             source_pattern = "/"
             destination    = "/contoso"
           }]
         }
         conditions = {
-          is_device_condition = [{
+          is_device_conditions = [{
             operator     = "Equal"
             match_values = ["Desktop"]
           }]

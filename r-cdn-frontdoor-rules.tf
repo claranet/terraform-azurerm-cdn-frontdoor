@@ -22,7 +22,7 @@ resource "azurerm_cdn_frontdoor_rule" "cdn_frontdoor_rule" {
 
   actions {
     dynamic "url_rewrite_action" {
-      for_each = each.value.actions.url_rewrite_action
+      for_each = each.value.actions.url_rewrite_actions
       iterator = action
       content {
         source_pattern          = action.value.source_pattern
@@ -31,7 +31,7 @@ resource "azurerm_cdn_frontdoor_rule" "cdn_frontdoor_rule" {
       }
     }
     dynamic "url_redirect_action" {
-      for_each = each.value.actions.url_redirect_action
+      for_each = each.value.actions.url_redirect_actions
       iterator = action
       content {
         redirect_type        = action.value.redirect_type
@@ -43,7 +43,7 @@ resource "azurerm_cdn_frontdoor_rule" "cdn_frontdoor_rule" {
       }
     }
     dynamic "route_configuration_override_action" {
-      for_each = each.value.actions.route_configuration_override_action
+      for_each = each.value.actions.route_configuration_override_actions
       iterator = action
       content {
         cache_duration                = action.value.cache_duration
@@ -56,7 +56,7 @@ resource "azurerm_cdn_frontdoor_rule" "cdn_frontdoor_rule" {
       }
     }
     dynamic "request_header_action" {
-      for_each = each.value.actions.request_header_action
+      for_each = each.value.actions.request_header_actions
       iterator = action
       content {
         header_action = action.value.header_action
@@ -65,7 +65,7 @@ resource "azurerm_cdn_frontdoor_rule" "cdn_frontdoor_rule" {
       }
     }
     dynamic "response_header_action" {
-      for_each = each.value.actions.response_header_action
+      for_each = each.value.actions.response_header_actions
       iterator = action
       content {
         header_action = action.value.header_action
@@ -79,7 +79,7 @@ resource "azurerm_cdn_frontdoor_rule" "cdn_frontdoor_rule" {
     for_each = each.value.conditions[*]
     content {
       dynamic "remote_address_condition" {
-        for_each = each.value.conditions.remote_address_condition
+        for_each = each.value.conditions.remote_address_conditions
         iterator = condition
         content {
           operator         = condition.value.operator
@@ -88,7 +88,7 @@ resource "azurerm_cdn_frontdoor_rule" "cdn_frontdoor_rule" {
         }
       }
       dynamic "request_method_condition" {
-        for_each = each.value.conditions.request_method_condition
+        for_each = each.value.conditions.request_method_conditions
         iterator = condition
         content {
           match_values     = condition.value.match_values
@@ -97,7 +97,7 @@ resource "azurerm_cdn_frontdoor_rule" "cdn_frontdoor_rule" {
         }
       }
       dynamic "query_string_condition" {
-        for_each = each.value.conditions.query_string_condition
+        for_each = each.value.conditions.query_string_conditions
         iterator = condition
         content {
           operator         = condition.value.operator
@@ -107,7 +107,7 @@ resource "azurerm_cdn_frontdoor_rule" "cdn_frontdoor_rule" {
         }
       }
       dynamic "post_args_condition" {
-        for_each = each.value.conditions.post_args_condition
+        for_each = each.value.conditions.post_args_conditions
         iterator = condition
         content {
           post_args_name   = condition.value.post_args_name
@@ -118,7 +118,7 @@ resource "azurerm_cdn_frontdoor_rule" "cdn_frontdoor_rule" {
         }
       }
       dynamic "request_uri_condition" {
-        for_each = each.value.conditions.request_uri_condition
+        for_each = each.value.conditions.request_uri_conditions
         iterator = condition
         content {
           operator         = condition.value.operator
@@ -128,7 +128,7 @@ resource "azurerm_cdn_frontdoor_rule" "cdn_frontdoor_rule" {
         }
       }
       dynamic "request_header_condition" {
-        for_each = each.value.conditions.request_header_condition
+        for_each = each.value.conditions.request_header_conditions
         iterator = condition
         content {
           header_name      = condition.value.header_name
@@ -139,7 +139,7 @@ resource "azurerm_cdn_frontdoor_rule" "cdn_frontdoor_rule" {
         }
       }
       dynamic "request_body_condition" {
-        for_each = each.value.conditions.request_body_condition
+        for_each = each.value.conditions.request_body_conditions
         iterator = condition
         content {
           operator         = condition.value.operator
@@ -149,7 +149,7 @@ resource "azurerm_cdn_frontdoor_rule" "cdn_frontdoor_rule" {
         }
       }
       dynamic "request_scheme_condition" {
-        for_each = each.value.conditions.request_scheme_condition
+        for_each = each.value.conditions.request_scheme_conditions
         iterator = condition
         content {
           operator         = condition.value.operator
@@ -158,7 +158,7 @@ resource "azurerm_cdn_frontdoor_rule" "cdn_frontdoor_rule" {
         }
       }
       dynamic "url_path_condition" {
-        for_each = each.value.conditions.url_path_condition
+        for_each = each.value.conditions.url_path_conditions
         iterator = condition
         content {
           operator         = condition.value.operator
@@ -168,7 +168,7 @@ resource "azurerm_cdn_frontdoor_rule" "cdn_frontdoor_rule" {
         }
       }
       dynamic "url_file_extension_condition" {
-        for_each = each.value.conditions.url_file_extension_condition
+        for_each = each.value.conditions.url_file_extension_conditions
         iterator = condition
         content {
           operator         = condition.value.operator
@@ -178,7 +178,7 @@ resource "azurerm_cdn_frontdoor_rule" "cdn_frontdoor_rule" {
         }
       }
       dynamic "url_filename_condition" {
-        for_each = each.value.conditions.url_filename_condition
+        for_each = each.value.conditions.url_filename_conditions
         iterator = condition
         content {
           operator         = condition.value.operator
@@ -188,7 +188,7 @@ resource "azurerm_cdn_frontdoor_rule" "cdn_frontdoor_rule" {
         }
       }
       dynamic "http_version_condition" {
-        for_each = each.value.conditions.http_version_condition
+        for_each = each.value.conditions.http_version_conditions
         iterator = condition
         content {
           match_values     = condition.value.match_values
@@ -197,7 +197,7 @@ resource "azurerm_cdn_frontdoor_rule" "cdn_frontdoor_rule" {
         }
       }
       dynamic "cookies_condition" {
-        for_each = each.value.conditions.cookies_condition
+        for_each = each.value.conditions.cookies_conditions
         iterator = condition
         content {
           cookie_name      = condition.value.cookie_name
@@ -208,7 +208,7 @@ resource "azurerm_cdn_frontdoor_rule" "cdn_frontdoor_rule" {
         }
       }
       dynamic "is_device_condition" {
-        for_each = each.value.conditions.is_device_condition
+        for_each = each.value.conditions.is_device_conditions
         iterator = condition
         content {
           operator         = condition.value.operator
@@ -217,7 +217,7 @@ resource "azurerm_cdn_frontdoor_rule" "cdn_frontdoor_rule" {
         }
       }
       dynamic "socket_address_condition" {
-        for_each = each.value.conditions.socket_address_condition
+        for_each = each.value.conditions.socket_address_conditions
         iterator = condition
         content {
           operator         = condition.value.operator
@@ -226,7 +226,7 @@ resource "azurerm_cdn_frontdoor_rule" "cdn_frontdoor_rule" {
         }
       }
       dynamic "client_port_condition" {
-        for_each = each.value.conditions.client_port_condition
+        for_each = each.value.conditions.client_port_conditions
         iterator = condition
         content {
           operator         = condition.value.operator
@@ -235,7 +235,7 @@ resource "azurerm_cdn_frontdoor_rule" "cdn_frontdoor_rule" {
         }
       }
       dynamic "server_port_condition" {
-        for_each = each.value.conditions.server_port_condition
+        for_each = each.value.conditions.server_port_conditions
         iterator = condition
         content {
           operator         = condition.value.operator
@@ -244,7 +244,7 @@ resource "azurerm_cdn_frontdoor_rule" "cdn_frontdoor_rule" {
         }
       }
       dynamic "host_name_condition" {
-        for_each = each.value.conditions.host_name_condition
+        for_each = each.value.conditions.host_name_conditions
         iterator = condition
         content {
           operator     = condition.value.operator
@@ -253,7 +253,7 @@ resource "azurerm_cdn_frontdoor_rule" "cdn_frontdoor_rule" {
         }
       }
       dynamic "ssl_protocol_condition" {
-        for_each = each.value.conditions.ssl_protocol_condition
+        for_each = each.value.conditions.ssl_protocol_conditions
         iterator = condition
         content {
           match_values     = condition.value.match_values
