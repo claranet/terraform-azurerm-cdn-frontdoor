@@ -1,4 +1,4 @@
-# Unreleased
+# v7.2.0 - 2023-04-07
 
 Breaking
   * AZ-1048: Rework `rule_sets` rules definition
