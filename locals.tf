@@ -18,11 +18,8 @@ locals {
   }
 
   rules_per_rule_set = flatten([
-    for rule_set in var.rule_sets :
-    [
-      for rule in rule_set.rules : merge({
-        rule_set_name = rule_set.name
-      }, rule)
+    for rule_set in var.rule_sets : [
+      for rule in rule_set.rules : merge({ rule_set_name = rule_set.name }, rule)
     ]
   ])
 }
