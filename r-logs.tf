@@ -1,6 +1,6 @@
 module "diagnostics" {
   source  = "claranet/diagnostic-settings/azurerm"
-  version = "6.2.0"
+  version = "~> 6.4.1"
 
   resource_id = azurerm_cdn_frontdoor_profile.cdn_frontdoor_profile.id
 
