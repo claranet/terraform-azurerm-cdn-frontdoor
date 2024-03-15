@@ -328,7 +328,7 @@ module "cdn_frontdoor" {
 
 | Name | Source | Version |
 |------|--------|---------|
-| diagnostics | claranet/diagnostic-settings/azurerm | ~> 6.4.1 |
+| diagnostics | claranet/diagnostic-settings/azurerm | ~> 6.5.0 |
 
 ## Resources
 
@@ -371,7 +371,6 @@ module "cdn_frontdoor" {
 | logs\_categories | Log categories to send to destinations. | `list(string)` | `null` | no |
 | logs\_destinations\_ids | List of destination resources IDs for logs diagnostics destination. Can be Storage Account, Log Analytics Workspace and Event Hub. No more than one of each can be set. Empty list to disable logging. | `list(string)` | n/a | yes |
 | logs\_metrics\_categories | Metrics categories to send to destinations. | `list(string)` | `null` | no |
-| logs\_retention\_days | Number of days to keep logs on storage account | `number` | `30` | no |
 | name\_prefix | Optional prefix for the generated name | `string` | `""` | no |
 | name\_suffix | Optional suffix for the generated name | `string` | `""` | no |
 | origin\_groups | CDN FrontDoor Origin Groups configurations. | <pre>list(object({<br>    name                                                      = string<br>    custom_resource_name                                      = optional(string)<br>    session_affinity_enabled                                  = optional(bool, true)<br>    restore_traffic_time_to_healed_or_new_endpoint_in_minutes = optional(number, 10)<br>    health_probe = optional(object({<br>      interval_in_seconds = number<br>      path                = string<br>      protocol            = string<br>      request_type        = string<br>    }))<br>    load_balancing = optional(object({<br>      additional_latency_in_milliseconds = optional(number, 50)<br>      sample_size                        = optional(number, 4)<br>      successful_samples_required        = optional(number, 3)<br>    }), {})<br>  }))</pre> | `[]` | no |
