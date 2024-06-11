@@ -109,9 +109,10 @@ variable "custom_domains" {
     host_name            = string
     dns_zone_id          = optional(string)
     tls = optional(object({
-      certificate_type        = optional(string, "ManagedCertificate")
-      minimum_tls_version     = optional(string, "TLS12")
-      cdn_frontdoor_secret_id = optional(string)
+      certificate_type         = optional(string, "ManagedCertificate")
+      minimum_tls_version      = optional(string, "TLS12")
+      cdn_frontdoor_secret_id  = optional(string)
+      key_vault_certificate_id = optional(string)
     }), {})
   }))
   default = []
