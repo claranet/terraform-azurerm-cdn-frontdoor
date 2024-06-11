@@ -28,7 +28,7 @@ resource "azurerm_cdn_frontdoor_firewall_policy" "cdn_frontdoor_firewall_policy"
           match_values       = match_condition.value.match_values
           operator           = match_condition.value.operator
           selector           = match_condition.value.selector
-          negation_condition = match_condition.value.negation_condition
+          negation_condition = match_condition.value.negate_condition
           transforms         = match_condition.value.transforms
         }
       }
