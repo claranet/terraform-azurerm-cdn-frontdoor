@@ -27,6 +27,40 @@ module "logs" {
   resource_group_name = module.rg.resource_group_name
 }
 
+# NOTE: In order for the certificate to be used by Azure FrontDoor, it must be PKCS#12 PFX 3DES.
+# The PFX must only contain the leaf and any intermediates, but it must not contain any Root CAs
+# already trusted by Azure. openssl v3 requires -legacy flag for 3DES compatibility.
+# Generate the CSR, get it signed by the CA, then create the PFX.
+#
+# openssl pkcs12 -export -out cert.pfx -inkey leaf.key -in leaf.pem -certfile intermediate.pem -legacy
+#
+resource "azurerm_key_vault_certificate" "cert" {
+  name         = "custom-contoso-com"
+  key_vault_id = var.key_vault_id
+
+  certificate {
+    contents = filebase64("./cert.pfx")
+    password = ""
+  }
+
+  # The following is required for PFX imports, but not PEM.
+  certificate_policy {
+    issuer_parameters {
+      name = "Unknown"
+    }
+    key_properties {
+      exportable = true
+      key_size   = 2048
+      key_type   = "RSA"
+      reuse_key  = false
+    }
+    secret_properties {
+      content_type = "application/x-pkcs12"
+    }
+  }
+
+}
+
 module "cdn_frontdoor" {
   source  = "claranet/cdn-frontdoor/azurerm"
   version = "x.x.x"
@@ -93,10 +127,20 @@ module "cdn_frontdoor" {
     },
   ]
 
-  custom_domains = [{
-    name      = "www"
-    host_name = "www.contoso.com"
-  }]
+  custom_domains = [
+    {
+      name      = "www"
+      host_name = "www.contoso.com"
+    },
+    {
+      name      = "custom-contoso-com"
+      host_name = "custom.contoso.com"
+      tls = {
+        certificate_type         = "CustomerCertificate"
+        key_vault_certificate_id = azurerm_key_vault_certificate.cert.id
+      }
+    }
+  ]
 
   routes = [
     {
