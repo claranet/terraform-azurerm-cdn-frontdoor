@@ -17,3 +17,8 @@ variable "stack" {
   description = "Project stack name"
   type        = string
 }
+
+variable "key_vault_id" {
+  description = "Azure Keyvault ID for secrets."
+  type        = string
+}

@@ -1,8 +1,3 @@
-# Unreleased
-
-Added
-  * Allow custom_domains to define key_vault_certificate_id referencing an imported CustomerCertificate.
-
 # v7.3.0 - 2024-04-05
 
 Changed

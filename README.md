@@ -71,7 +71,7 @@ resource "azurerm_key_vault_certificate" "cert" {
   key_vault_id = var.key_vault_id
 
   certificate {
-    contents = filebase64("./cert.pfx")
+    contents = "abcd" # filebase64("./cert.pfx")
     password = ""
   }
 
