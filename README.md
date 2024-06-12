@@ -343,6 +343,7 @@ module "cdn_frontdoor" {
 | [azurerm_cdn_frontdoor_route.cdn_frontdoor_route](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/cdn_frontdoor_route) | resource |
 | [azurerm_cdn_frontdoor_rule.cdn_frontdoor_rule](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/cdn_frontdoor_rule) | resource |
 | [azurerm_cdn_frontdoor_rule_set.cdn_frontdoor_rule_set](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/cdn_frontdoor_rule_set) | resource |
+| [azurerm_cdn_frontdoor_secret.cdn_frontdoor_secret](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/cdn_frontdoor_secret) | resource |
 | [azurerm_cdn_frontdoor_security_policy.cdn_frontdoor_security_policy](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/cdn_frontdoor_security_policy) | resource |
 | [azurecaf_name.cdn_frontdoor_custom_domain](https://registry.terraform.io/providers/aztfmod/azurecaf/latest/docs/data-sources/name) | data source |
 | [azurecaf_name.cdn_frontdoor_endpoint](https://registry.terraform.io/providers/aztfmod/azurecaf/latest/docs/data-sources/name) | data source |
@@ -362,7 +363,7 @@ module "cdn_frontdoor" {
 | cdn\_frontdoor\_profile\_name | Specifies the name of the FrontDoor Profile. | `string` | `""` | no |
 | client\_name | Client name/account used in naming. | `string` | n/a | yes |
 | custom\_diagnostic\_settings\_name | Custom name of the diagnostics settings, name will be 'default' if not set. | `string` | `"default"` | no |
-| custom\_domains | CDN FrontDoor Custom Domains configurations. | <pre>list(object({<br>    name                 = string<br>    custom_resource_name = optional(string)<br>    host_name            = string<br>    dns_zone_id          = optional(string)<br>    tls = optional(object({<br>      certificate_type        = optional(string, "ManagedCertificate")<br>      minimum_tls_version     = optional(string, "TLS12")<br>      cdn_frontdoor_secret_id = optional(string)<br>    }), {})<br>  }))</pre> | `[]` | no |
+| custom\_domains | CDN FrontDoor Custom Domains configurations. | <pre>list(object({<br>    name                 = string<br>    custom_resource_name = optional(string)<br>    host_name            = string<br>    dns_zone_id          = optional(string)<br>    tls = optional(object({<br>      certificate_type         = optional(string, "ManagedCertificate")<br>      minimum_tls_version      = optional(string, "TLS12")<br>      cdn_frontdoor_secret_id  = optional(string)<br>      key_vault_certificate_id = optional(string)<br>    }), {})<br>  }))</pre> | `[]` | no |
 | default\_tags\_enabled | Option to enable or disable default tags. | `bool` | `true` | no |
 | endpoints | CDN FrontDoor Endpoints configurations. | <pre>list(object({<br>    name                 = string<br>    prefix               = optional(string)<br>    custom_resource_name = optional(string)<br>    enabled              = optional(bool, true)<br>  }))</pre> | `[]` | no |
 | environment | Project environment. | `string` | n/a | yes |
