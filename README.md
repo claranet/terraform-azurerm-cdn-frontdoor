@@ -59,6 +59,40 @@ module "logs" {
   resource_group_name = module.rg.resource_group_name
 }
 
+# NOTE: In order for the certificate to be used by Azure FrontDoor, it must be PKCS#12 PFX 3DES.
+# The PFX must only contain the leaf and any intermediates, but it must not contain any Root CAs
+# already trusted by Azure. openssl v3 requires -legacy flag for 3DES compatibility.
+# Generate the CSR, get it signed by the CA, then create the PFX.
+#
+# openssl pkcs12 -export -out cert.pfx -inkey leaf.key -in leaf.pem -certfile intermediate.pem -legacy
+#
+resource "azurerm_key_vault_certificate" "cert" {
+  name         = "custom-contoso-com"
+  key_vault_id = var.key_vault_id
+
+  certificate {
+    contents = "abcd" # filebase64("./cert.pfx")
+    password = ""
+  }
+
+  # The following is required for PFX imports, but not PEM.
+  certificate_policy {
+    issuer_parameters {
+      name = "Unknown"
+    }
+    key_properties {
+      exportable = true
+      key_size   = 2048
+      key_type   = "RSA"
+      reuse_key  = false
+    }
+    secret_properties {
+      content_type = "application/x-pkcs12"
+    }
+  }
+
+}
+
 module "cdn_frontdoor" {
   source  = "claranet/cdn-frontdoor/azurerm"
   version = "x.x.x"
@@ -125,10 +159,20 @@ module "cdn_frontdoor" {
     },
   ]
 
-  custom_domains = [{
-    name      = "www"
-    host_name = "www.contoso.com"
-  }]
+  custom_domains = [
+    {
+      name      = "www"
+      host_name = "www.contoso.com"
+    },
+    {
+      name      = "custom-contoso-com"
+      host_name = "custom.contoso.com"
+      tls = {
+        certificate_type         = "CustomerCertificate"
+        key_vault_certificate_id = azurerm_key_vault_certificate.cert.id
+      }
+    }
+  ]
 
   routes = [
     {
@@ -343,6 +387,7 @@ module "cdn_frontdoor" {
 | [azurerm_cdn_frontdoor_route.cdn_frontdoor_route](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/cdn_frontdoor_route) | resource |
 | [azurerm_cdn_frontdoor_rule.cdn_frontdoor_rule](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/cdn_frontdoor_rule) | resource |
 | [azurerm_cdn_frontdoor_rule_set.cdn_frontdoor_rule_set](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/cdn_frontdoor_rule_set) | resource |
+| [azurerm_cdn_frontdoor_secret.cdn_frontdoor_secret](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/cdn_frontdoor_secret) | resource |
 | [azurerm_cdn_frontdoor_security_policy.cdn_frontdoor_security_policy](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/cdn_frontdoor_security_policy) | resource |
 | [azurecaf_name.cdn_frontdoor_custom_domain](https://registry.terraform.io/providers/aztfmod/azurecaf/latest/docs/data-sources/name) | data source |
 | [azurecaf_name.cdn_frontdoor_endpoint](https://registry.terraform.io/providers/aztfmod/azurecaf/latest/docs/data-sources/name) | data source |
@@ -362,7 +407,7 @@ module "cdn_frontdoor" {
 | cdn\_frontdoor\_profile\_name | Specifies the name of the FrontDoor Profile. | `string` | `""` | no |
 | client\_name | Client name/account used in naming. | `string` | n/a | yes |
 | custom\_diagnostic\_settings\_name | Custom name of the diagnostics settings, name will be 'default' if not set. | `string` | `"default"` | no |
-| custom\_domains | CDN FrontDoor Custom Domains configurations. | <pre>list(object({<br>    name                 = string<br>    custom_resource_name = optional(string)<br>    host_name            = string<br>    dns_zone_id          = optional(string)<br>    tls = optional(object({<br>      certificate_type        = optional(string, "ManagedCertificate")<br>      minimum_tls_version     = optional(string, "TLS12")<br>      cdn_frontdoor_secret_id = optional(string)<br>    }), {})<br>  }))</pre> | `[]` | no |
+| custom\_domains | CDN FrontDoor Custom Domains configurations. | <pre>list(object({<br>    name                 = string<br>    custom_resource_name = optional(string)<br>    host_name            = string<br>    dns_zone_id          = optional(string)<br>    tls = optional(object({<br>      certificate_type         = optional(string, "ManagedCertificate")<br>      minimum_tls_version      = optional(string, "TLS12")<br>      cdn_frontdoor_secret_id  = optional(string)<br>      key_vault_certificate_id = optional(string)<br>    }), {})<br>  }))</pre> | `[]` | no |
 | default\_tags\_enabled | Option to enable or disable default tags. | `bool` | `true` | no |
 | endpoints | CDN FrontDoor Endpoints configurations. | <pre>list(object({<br>    name                 = string<br>    prefix               = optional(string)<br>    custom_resource_name = optional(string)<br>    enabled              = optional(bool, true)<br>  }))</pre> | `[]` | no |
 | environment | Project environment. | `string` | n/a | yes |
