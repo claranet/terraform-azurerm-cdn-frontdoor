@@ -1,3 +1,46 @@
+## 7.4.0 (2024-06-14)
+
+
+### Features
+
+* add resource azurerm_cdn_frontdoor_secret; add option var custom_domains.key_vault_certificate_id 91667ab
+
+
+### Bug Fixes
+
+* fix example 9b01b2a
+
+
+### Continuous Integration
+
+* **AZ-1391:** enable semantic-release [skip ci] 6c39e21
+* **AZ-1391:** update semantic-release config [skip ci] cdf696f
+
+
+### Miscellaneous Chores
+
+* **deps:** enable automerge on renovate e95f24e
+* **deps:** update dependency opentofu to v1.7.0 6bb06ba
+* **deps:** update dependency opentofu to v1.7.1 d0fe301
+* **deps:** update dependency opentofu to v1.7.2 c68ba50
+* **deps:** update dependency pre-commit to v3.7.1 d7bcdf6
+* **deps:** update dependency terraform-docs to v0.18.0 1e0f28e
+* **deps:** update dependency tflint to v0.51.0 691397f
+* **deps:** update dependency tflint to v0.51.1 38fa201
+* **deps:** update dependency trivy to v0.50.2 e5ec4ee
+* **deps:** update dependency trivy to v0.50.4 3a4eb9e
+* **deps:** update dependency trivy to v0.51.0 6a427e9
+* **deps:** update dependency trivy to v0.51.1 5a5ef01
+* **deps:** update dependency trivy to v0.51.2 57f7e88
+* **deps:** update dependency trivy to v0.51.3 6c05209
+* **deps:** update dependency trivy to v0.51.4 4540053
+* **deps:** update dependency trivy to v0.52.0 96e15b7
+* **deps:** update dependency trivy to v0.52.1 53651f4
+* **pre-commit:** update commitlint hook 95901b5
+* ran terraform-docs 9c90264
+* **release:** remove legacy `VERSION` file 805768a
+* update example for custom domains e69b647
+
 # v7.3.0 - 2024-04-05
 
 Changed
