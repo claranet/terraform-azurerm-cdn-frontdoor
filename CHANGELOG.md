@@ -1,7 +1,7 @@
 # v7.3.0 - 2024-04-05
 
 Changed
-* [GH-3](https://github.com/claranet/terraform-azurerm-cdn-frontdoor/pull/3): Bump diagnostic settings version to 6.5.0
+  * [GH-3](https://github.com/claranet/terraform-azurerm-cdn-frontdoor/pull/3): Bump diagnostic settings version to 6.5.0
 
 # v7.2.0 - 2023-04-07
 
