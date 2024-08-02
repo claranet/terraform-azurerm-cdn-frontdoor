@@ -32,7 +32,7 @@ resource "azurerm_cdn_frontdoor_custom_domain" "cdn_frontdoor_custom_domain" {
     content {
       certificate_type        = each.value.tls.certificate_type
       minimum_tls_version     = each.value.tls.minimum_tls_version
-      cdn_frontdoor_secret_id = try(each.value.tls.key_vault_certificate_id, null) == null ? each.value.tls.cdn_frontdoor_secret_id : try(azurerm_cdn_frontdoor_secret.cdn_frontdoor_secret[each.value.name].id, null)
+      cdn_frontdoor_secret_id = try(coalesce(each.value.tls.key_vault_certificate_id, each.value.tls.cdn_frontdoor_secret_id), null) == null ? each.value.tls.cdn_frontdoor_secret_id : try(azurerm_cdn_frontdoor_secret.cdn_frontdoor_secret[each.value.name].id, null)
     }
   }
 }
@@ -71,7 +71,7 @@ resource "azurerm_cdn_frontdoor_route" "cdn_frontdoor_route" {
 }
 
 resource "azurerm_cdn_frontdoor_secret" "cdn_frontdoor_secret" {
-  for_each                 = try({ for custom_domain in var.custom_domains : custom_domain.name => custom_domain }, {})
+  for_each                 = try({ for custom_domain in var.custom_domains : custom_domain.name => custom_domain if custom_domain.tls.key_vault_certificate_id != null }, {})
   name                     = coalesce(each.value.custom_resource_name, data.azurecaf_name.cdn_frontdoor_custom_domain[each.key].result)
   cdn_frontdoor_profile_id = azurerm_cdn_frontdoor_profile.cdn_frontdoor_profile.id
 
