@@ -1,3 +1,24 @@
+## 7.5.0 (2024-08-02)
+
+
+### Features
+
+* **AZ-1444:** support of AFD certificates 14ff9ef
+
+
+### Miscellaneous Chores
+
+* **deps:** update dependency opentofu to v1.7.3 71637fd
+* **deps:** update dependency opentofu to v1.8.0 8fcd7fe
+* **deps:** update dependency pre-commit to v3.8.0 ee95289
+* **deps:** update dependency tflint to v0.51.2 2997b00
+* **deps:** update dependency tflint to v0.52.0 12bb82f
+* **deps:** update dependency trivy to v0.52.2 787e211
+* **deps:** update dependency trivy to v0.53.0 517650e
+* **deps:** update dependency trivy to v0.54.1 603f8e7
+* **deps:** update pre-commit hook antonbabenko/pre-commit-terraform to v1.92.0 b3d3316
+* **deps:** update pre-commit hook antonbabenko/pre-commit-terraform to v1.92.1 8548f8f
+
 ## 7.4.0 (2024-06-14)
 
 
