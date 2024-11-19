@@ -1,49 +1,69 @@
-output "profile_name" {
+output "name" {
   description = "The name of the CDN FrontDoor Profile."
-  value       = azurerm_cdn_frontdoor_profile.cdn_frontdoor_profile.name
+  value       = azurerm_cdn_frontdoor_profile.main.name
 }
 
-output "profile_id" {
+output "id" {
   description = "The ID of the CDN FrontDoor Profile."
-  value       = azurerm_cdn_frontdoor_profile.cdn_frontdoor_profile.id
+  value       = azurerm_cdn_frontdoor_profile.main.id
 }
 
-output "endpoints" {
-  description = "CDN FrontDoor endpoints outputs."
-  value       = azurerm_cdn_frontdoor_endpoint.cdn_frontdoor_endpoint
+output "resource" {
+  description = "Azure CDN FrontDoor Profile output object."
+  value       = azurerm_cdn_frontdoor_profile.main
 }
 
-output "origin_groups" {
-  description = "CDN FrontDoor origin groups outputs."
-  value       = azurerm_cdn_frontdoor_origin_group.cdn_frontdoor_origin_group
+output "resource_endpoint" {
+  description = "Azure CDN FrontDoor endpoints resource output."
+  value       = azurerm_cdn_frontdoor_endpoint.main
 }
 
-output "origins" {
-  description = "CDN FrontDoor origins outputs."
-  value       = azurerm_cdn_frontdoor_origin.cdn_frontdoor_origin
+output "resource_origin_group" {
+  description = "Azure CDN FrontDoor origin group resource output."
+  value       = azurerm_cdn_frontdoor_origin_group.main
 }
 
-output "custom_domains" {
-  description = "CDN FrontDoor custom domains outputs."
-  value       = azurerm_cdn_frontdoor_custom_domain.cdn_frontdoor_custom_domain
+output "resource_origin" {
+  description = "Azure CDN FrontDoor origin resource output."
+  value       = azurerm_cdn_frontdoor_origin.main
 }
 
-output "rule_sets" {
-  description = "CDN FrontDoor rule sets outputs."
-  value       = azurerm_cdn_frontdoor_rule_set.cdn_frontdoor_rule_set
+output "resource_custom_domain" {
+  description = "Azure CDN FrontDoor custom domain resource output."
+  value       = azurerm_cdn_frontdoor_custom_domain.main
 }
 
-output "rules" {
-  description = "CDN FrontDoor rules outputs."
-  value       = azurerm_cdn_frontdoor_rule.cdn_frontdoor_rule
+output "resource_rule_set" {
+  description = "Azure CDN FrontDoor rule set resource output."
+  value       = azurerm_cdn_frontdoor_rule_set.main
 }
 
-output "firewall_policies" {
-  description = "CDN FrontDoor firewall policies outputs."
-  value       = azurerm_cdn_frontdoor_firewall_policy.cdn_frontdoor_firewall_policy
+output "resource_rule" {
+  description = "Azure CDN FrontDoor rule resource output."
+  value       = azurerm_cdn_frontdoor_rule.main
 }
 
-output "security_policies" {
-  description = "CDN FrontDoor security policies outputs."
-  value       = azurerm_cdn_frontdoor_security_policy.cdn_frontdoor_security_policy
+output "resource_firewall_policy" {
+  description = "Azure CDN FrontDoor firewall policy resource output."
+  value       = azurerm_cdn_frontdoor_firewall_policy.main
+}
+
+output "resource_security_policy" {
+  description = "Azure CDN FrontDoor security policy resource output."
+  value       = azurerm_cdn_frontdoor_security_policy.main
+}
+
+output "resource_route" {
+  description = "Azure CDN FrontDoor route resource output."
+  value       = azurerm_cdn_frontdoor_route.main
+}
+
+output "resource_secret" {
+  description = "Azure CDN FrontDoor secret resource output."
+  value       = azurerm_cdn_frontdoor_secret.main
+}
+
+output "module_diagnostics" {
+  description = "Diagnostics Settings module output."
+  value       = module.diagnostics
 }

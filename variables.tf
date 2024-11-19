@@ -23,7 +23,7 @@ variable "resource_group_name" {
 # ------------------
 # CDN FrontDoor Profile
 variable "sku_name" {
-  description = "Specifies the SKU for this CDN FrontDoor Profile. Possible values include `Standard_AzureFrontDoor` and `Premium_AzureFrontDoor`."
+  description = "Specifies the SKU for this Azure CDN FrontDoor profile. Possible values include `Standard_AzureFrontDoor` and `Premium_AzureFrontDoor`."
   type        = string
   default     = "Standard_AzureFrontDoor"
 }
@@ -37,7 +37,7 @@ variable "response_timeout_seconds" {
 # ------------------
 # CDN FrontDoor Endpoint
 variable "endpoints" {
-  description = "CDN FrontDoor Endpoints configurations."
+  description = "Azure CDN FrontDoor endpoints configurations."
   type = list(object({
     name                 = string
     prefix               = optional(string)
@@ -50,7 +50,7 @@ variable "endpoints" {
 # ------------------
 # CDN FrontDoor Origin Groups
 variable "origin_groups" {
-  description = "CDN FrontDoor Origin Groups configurations."
+  description = "Azure CDN FrontDoor origin groups configurations."
   type = list(object({
     name                                                      = string
     custom_resource_name                                      = optional(string)
@@ -74,7 +74,7 @@ variable "origin_groups" {
 # ------------------
 # CDN FrontDoor Origins
 variable "origins" {
-  description = "CDN FrontDoor Origins configurations."
+  description = "Azure CDN FrontDoor origins configurations."
   type = list(object({
     name                           = string
     custom_resource_name           = optional(string)
@@ -102,7 +102,7 @@ variable "origins" {
 # ------------------
 # CDN FrontDoor Custom Domains
 variable "custom_domains" {
-  description = "CDN FrontDoor Custom Domains configurations."
+  description = "Azure CDN FrontDoor custom domains configurations."
   type = list(object({
     name                 = string
     custom_resource_name = optional(string)
@@ -131,7 +131,7 @@ variable "custom_domains" {
 # ------------------
 # CDN FrontDoor Routes
 variable "routes" {
-  description = "CDN FrontDoor Routes configurations."
+  description = "Azure CDN FrontDoor routes configurations."
   type = list(object({
     name                 = string
     custom_resource_name = optional(string)
@@ -164,7 +164,7 @@ variable "routes" {
 # ------------------
 # CDN FrontDoor Rule Sets + Rules
 variable "rule_sets" {
-  description = "CDN FrontDoor Rule Sets and associated Rules configurations."
+  description = "Azure CDN FrontDoor rule sets and associated rules configurations."
   type = list(object({
     name                 = string
     custom_resource_name = optional(string)
@@ -326,7 +326,7 @@ variable "rule_sets" {
 # ------------------
 # CDN FrontDoor Firewall Policies
 variable "firewall_policies" {
-  description = "CDN Frontdoor Firewall Policies configurations."
+  description = "Azure CDN Frontdoor firewall policies configurations."
   type = list(object({
     name                              = string
     custom_resource_name              = optional(string)
@@ -386,7 +386,7 @@ variable "firewall_policies" {
 # ------------------
 # CDN FrontDoor Security Policies
 variable "security_policies" {
-  description = "CDN FrontDoor Security policies configurations."
+  description = "Azure CDN FrontDoor security policies configurations."
   type = list(object({
     name                 = string
     custom_resource_name = optional(string)
