@@ -11,14 +11,8 @@ variable "name_suffix" {
   default     = ""
 }
 
-variable "use_caf_naming" {
-  description = "Use the Azure CAF naming provider to generate default resource name. `custom_name` override this if set. Legacy default name is used if this is set to `false`."
-  type        = bool
-  default     = true
-}
-
 # Custom naming override
-variable "cdn_frontdoor_profile_name" {
+variable "custom_name" {
   description = "Specifies the name of the FrontDoor Profile."
   type        = string
   default     = ""
