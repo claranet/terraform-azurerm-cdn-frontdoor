@@ -3,6 +3,15 @@ resource "azurerm_cdn_frontdoor_profile" "main" {
   resource_group_name = var.resource_group_name
   sku_name            = var.sku_name
 
+  dynamic "identity" {
+    for_each = var.identity[*]
+    content {
+      type = var.identity.type
+      # Avoid perpetual changes if SystemAssigned and identity_ids is not null
+      identity_ids = endswith(var.identity.type, "UserAssigned") ? var.identity.identity_ids : null
+    }
+  }
+
   response_timeout_seconds = var.response_timeout_seconds
 
   tags = merge(local.default_tags, var.extra_tags)

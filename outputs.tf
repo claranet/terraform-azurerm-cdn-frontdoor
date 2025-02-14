@@ -8,6 +8,11 @@ output "id" {
   value       = azurerm_cdn_frontdoor_profile.main.id
 }
 
+output "identity_principal_id" {
+  description = "Azure CDN FrontDoor system identity principal ID."
+  value       = try(azurerm_cdn_frontdoor_profile.main.identity[0].principal_id, null)
+}
+
 output "resource" {
   description = "Azure CDN FrontDoor Profile output object."
   value       = azurerm_cdn_frontdoor_profile.main
