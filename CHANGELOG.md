@@ -1,3 +1,27 @@
+## 8.1.0 (2025-02-14)
+
+### Features
+
+* **AZ-1500:** add identity block e865ca9
+
+### Miscellaneous Chores
+
+* **deps:** update dependency opentofu to v1.8.6 6430400
+* **deps:** update dependency opentofu to v1.8.7 f351d14
+* **deps:** update dependency opentofu to v1.8.8 4a01e4c
+* **deps:** update dependency opentofu to v1.9.0 383e26a
+* **deps:** update dependency pre-commit to v4.1.0 a113fdb
+* **deps:** update dependency tflint to v0.55.0 d298032
+* **deps:** update dependency trivy to v0.58.0 3eadd5f
+* **deps:** update dependency trivy to v0.58.1 e2471d5
+* **deps:** update dependency trivy to v0.58.2 3fd26a9
+* **deps:** update dependency trivy to v0.59.1 d60c337
+* **deps:** update pre-commit hook alessandrojcm/commitlint-pre-commit-hook to v9.19.0 bbd3a2d
+* **deps:** update pre-commit hook alessandrojcm/commitlint-pre-commit-hook to v9.20.0 17f20a3
+* **deps:** update tools 612bc9e
+* update Github templates f432d9b
+* update tflint config for v0.55.0 f4a41ab
+
 ## 8.0.0 (2024-11-20)
 
 ### ⚠ BREAKING CHANGES
