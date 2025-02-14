@@ -34,6 +34,15 @@ variable "response_timeout_seconds" {
   default     = 120
 }
 
+variable "identity" {
+  description = "Managed identity configuration. SystemAssigned or UserAssigned or Both."
+  type = object({
+    type         = optional(string, "SystemAssigned")
+    identity_ids = optional(list(string))
+  })
+  default = {}
+}
+
 # ------------------
 # CDN FrontDoor Endpoint
 variable "endpoints" {

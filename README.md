@@ -340,7 +340,7 @@ module "cdn_frontdoor" {
 | Name | Version |
 |------|---------|
 | azurecaf | ~> 1.2.28 |
-| azurerm | ~> 4.0 |
+| azurerm | ~> 4.15 |
 
 ## Modules
 
@@ -387,6 +387,7 @@ module "cdn_frontdoor" {
 | environment | Project environment. | `string` | n/a | yes |
 | extra\_tags | Extra tags to add. | `map(string)` | `{}` | no |
 | firewall\_policies | Azure CDN Frontdoor firewall policies configurations. | <pre>list(object({<br/>    name                              = string<br/>    custom_resource_name              = optional(string)<br/>    enabled                           = optional(bool, true)<br/>    mode                              = optional(string, "Prevention")<br/>    redirect_url                      = optional(string)<br/>    custom_block_response_status_code = optional(number)<br/>    custom_block_response_body        = optional(string)<br/>    custom_rules = optional(list(object({<br/>      name                           = string<br/>      action                         = string<br/>      enabled                        = optional(bool, true)<br/>      priority                       = number<br/>      type                           = string<br/>      rate_limit_duration_in_minutes = optional(number, 1)<br/>      rate_limit_threshold           = optional(number, 10)<br/>      match_conditions = list(object({<br/>        match_variable   = string<br/>        match_values     = list(string)<br/>        operator         = string<br/>        selector         = optional(string)<br/>        negate_condition = optional(bool)<br/>        transforms       = optional(list(string), [])<br/>      }))<br/>    })), [])<br/>    managed_rules = optional(list(object({<br/>      type    = string<br/>      version = optional(string, "1.0")<br/>      action  = string<br/>      exclusions = optional(list(object({<br/>        match_variable = string<br/>        operator       = string<br/>        selector       = string<br/>      })), [])<br/>      overrides = optional(list(object({<br/>        rule_group_name = string<br/>        exclusions = optional(list(object({<br/>          match_variable = string<br/>          operator       = string<br/>          selector       = string<br/>        })), [])<br/>        rules = optional(list(object({<br/>          rule_id = string<br/>          action  = string<br/>          enabled = optional(bool, true)<br/>          exclusions = optional(list(object({<br/>            match_variable = string<br/>            operator       = string<br/>            selector       = string<br/>        })), []) })), [])<br/>      })), [])<br/>    })), [])<br/>  }))</pre> | `[]` | no |
+| identity | Managed identity configuration. SystemAssigned or UserAssigned or Both. | <pre>object({<br/>    type         = optional(string, "SystemAssigned")<br/>    identity_ids = optional(list(string))<br/>  })</pre> | `{}` | no |
 | logs\_categories | Log categories to send to destinations. | `list(string)` | `null` | no |
 | logs\_destinations\_ids | List of destination resources IDs for logs diagnostic destination.<br/>Can be `Storage Account`, `Log Analytics Workspace` and `Event Hub`. No more than one of each can be set.<br/>If you want to use Azure EventHub as a destination, you must provide a formatted string containing both the EventHub Namespace authorization send ID and the EventHub name (name of the queue to use in the Namespace) separated by the <code>&#124;</code> character. | `list(string)` | n/a | yes |
 | logs\_metrics\_categories | Metrics categories to send to destinations. | `list(string)` | `null` | no |
@@ -407,6 +408,7 @@ module "cdn_frontdoor" {
 | Name | Description |
 |------|-------------|
 | id | The ID of the CDN FrontDoor Profile. |
+| identity\_principal\_id | Azure CDN FrontDoor system identity principal ID. |
 | module\_diagnostics | Diagnostics Settings module output. |
 | name | The name of the CDN FrontDoor Profile. |
 | resource | Azure CDN FrontDoor Profile output object. |
