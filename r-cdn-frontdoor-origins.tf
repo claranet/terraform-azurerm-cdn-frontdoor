@@ -33,7 +33,12 @@ moved {
 resource "azurerm_cdn_frontdoor_origin" "main" {
   for_each = try({ for origin in var.origins : origin.name => origin }, {})
 
-  name                          = coalesce(each.value.custom_resource_name, data.azurecaf_name.cdn_frontdoor_origin[each.key].result)
+  name = (
+   var.use_frontdoor_origin_caf_naming ?
+   coalesce(each.value.custom_resource_name, data.azurecaf_name.cdn_frontdoor_origin[each.key].result) :
+   each.value.custom_resource_name
+  )
+
   cdn_frontdoor_origin_group_id = azurerm_cdn_frontdoor_origin_group.main[each.value.origin_group_name].id
 
   enabled                        = each.value.enabled
