@@ -31,7 +31,7 @@ moved {
 }
 
 resource "azurerm_cdn_frontdoor_origin" "main" {
-  for_each = try({ for origin in var.origins : origin.name => origin }, {})
+  for_each = var.use_frontdoor_origin_caf_naming ? { for origin in var.origins : origin.name => origin } : {}
 
   name = (
     var.use_frontdoor_origin_caf_naming ?
