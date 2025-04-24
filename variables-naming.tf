@@ -17,9 +17,3 @@ variable "custom_name" {
   type        = string
   default     = ""
 }
-
-variable "use_frontdoor_origin_caf_naming" {
-  description = "Whether to use Azure CAF naming convention"
-  type        = bool
-  default     = true
-}

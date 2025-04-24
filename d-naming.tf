@@ -33,7 +33,7 @@ data "azurecaf_name" "cdn_frontdoor_origin_group" {
 }
 
 data "azurecaf_name" "cdn_frontdoor_origin" {
-  for_each = var.use_frontdoor_origin_caf_naming ? { for origin in var.origins : origin.name => origin } : {}
+  for_each = try({ for origin in var.origins : origin.name => origin }, {})
 
   name          = var.stack
   resource_type = "azurerm_cdn_frontdoor_origin"
