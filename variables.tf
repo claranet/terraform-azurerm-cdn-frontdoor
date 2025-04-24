@@ -81,11 +81,10 @@ variable "origin_groups" {
 }
 
 # ------------------
-# CDN FrontDoor Origins
+# CDN FrontDoor Origins (as map of maps)
 variable "origins" {
   description = "Azure CDN FrontDoor origins configurations."
-  type = list(object({
-    name                           = string
+  type = map(object({
     custom_resource_name           = optional(string)
     origin_group_name              = string
     enabled                        = optional(bool, true)
@@ -105,7 +104,7 @@ variable "origins" {
       private_link_target_id = string
     }))
   }))
-  default = []
+  default = {}
 }
 
 # ------------------
