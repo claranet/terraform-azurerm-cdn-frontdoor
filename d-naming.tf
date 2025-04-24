@@ -33,12 +33,12 @@ data "azurecaf_name" "cdn_frontdoor_origin_group" {
 }
 
 data "azurecaf_name" "cdn_frontdoor_origin" {
-  for_each = try({ for origin in var.origins : origin.name => origin }, {})
+  for_each = var.origins
 
   name          = var.stack
   resource_type = "azurerm_cdn_frontdoor_origin"
   prefixes      = var.name_prefix == "" ? null : [local.name_prefix]
-  suffixes      = compact([var.client_name, var.environment, local.name_suffix, each.value.name])
+  suffixes      = compact([var.client_name, var.environment, local.name_suffix, each.key])
   use_slug      = true
   clean_input   = true
   separator     = "-"

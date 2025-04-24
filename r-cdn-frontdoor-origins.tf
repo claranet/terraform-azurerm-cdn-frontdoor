@@ -31,7 +31,7 @@ moved {
 }
 
 resource "azurerm_cdn_frontdoor_origin" "main" {
-  for_each = try({ for origin in var.origins : origin.name => origin }, {})
+  for_each = var.origins
 
   name                          = coalesce(each.value.custom_resource_name, data.azurecaf_name.cdn_frontdoor_origin[each.key].result)
   cdn_frontdoor_origin_group_id = azurerm_cdn_frontdoor_origin_group.main[each.value.origin_group_name].id
@@ -46,12 +46,12 @@ resource "azurerm_cdn_frontdoor_origin" "main" {
   weight                         = each.value.weight
 
   dynamic "private_link" {
-    for_each = each.value.private_link == null ? [] : ["enabled"]
+    for_each = each.value.private_link == null ? [] : [each.value.private_link]
     content {
-      request_message        = each.value.private_link.request_message
-      target_type            = each.value.private_link.target_type
-      location               = each.value.private_link.location
-      private_link_target_id = each.value.private_link.private_link_target_id
+      request_message        = private_link.value.request_message
+      target_type            = private_link.value.target_type
+      location               = private_link.value.location
+      private_link_target_id = private_link.value.private_link_target_id
     }
   }
 }
