@@ -198,7 +198,7 @@ variable "rule_sets" {
           destination_fragment = optional(string, "")
         })), [])
         route_configuration_override_actions = optional(list(object({
-          cache_duration                = optional(string, "1.12:00:00")
+          cache_duration                = optional(string)
           cdn_frontdoor_origin_group_id = optional(string)
           forwarding_protocol           = optional(string, "MatchRequest")
           query_string_caching_behavior = optional(string, "IgnoreQueryString")
