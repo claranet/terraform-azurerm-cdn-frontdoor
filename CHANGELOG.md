@@ -1,3 +1,26 @@
+## 8.1.1 (2025-05-23)
+
+### Bug Fixes
+
+* **rules-actions:** 🐛 no default cache duration f26e1dc
+* **rules-actions:** 🐛 update origin group handling in actions ab3f138
+
+### Miscellaneous Chores
+
+* **deps:** update dependency opentofu to v1.9.1 c928e75
+* **deps:** update dependency pre-commit to v4.2.0 bc8b875
+* **deps:** update dependency terraform-docs to v0.20.0 fda926b
+* **deps:** update dependency tflint to v0.56.0 f502eed
+* **deps:** update dependency tflint to v0.57.0 6032a78
+* **deps:** update dependency trivy to v0.60.0 c7f036f
+* **deps:** update dependency trivy to v0.61.0 0b89de1
+* **deps:** update dependency trivy to v0.61.1 ac28464
+* **deps:** update dependency trivy to v0.62.0 4b1bf21
+* **deps:** update dependency trivy to v0.62.1 4eae3a7
+* **deps:** update pre-commit hook alessandrojcm/commitlint-pre-commit-hook to v9.21.0 9c1a1ff
+* **deps:** update pre-commit hook alessandrojcm/commitlint-pre-commit-hook to v9.22.0 580106a
+* **deps:** update pre-commit hook tofuutils/pre-commit-opentofu to v2.2.0 490b5ec
+
 ## 8.1.0 (2025-02-14)
 
 ### Features
