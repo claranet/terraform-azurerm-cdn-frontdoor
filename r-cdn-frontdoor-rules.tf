@@ -52,7 +52,7 @@ resource "azurerm_cdn_frontdoor_rule" "main" {
       iterator = action
       content {
         cache_duration                = action.value.cache_duration
-        cdn_frontdoor_origin_group_id = action.value.cdn_frontdoor_origin_group_id
+        cdn_frontdoor_origin_group_id = action.value.cdn_frontdoor_origin_group_name != null ? azurerm_cdn_frontdoor_origin_group.main[action.value.cdn_frontdoor_origin_group_name].id : action.value.cdn_frontdoor_origin_group_id
         forwarding_protocol           = action.value.forwarding_protocol
         query_string_caching_behavior = action.value.query_string_caching_behavior
         query_string_parameters       = action.value.query_string_parameters
