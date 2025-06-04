@@ -202,10 +202,10 @@ variable "rule_sets" {
           cdn_frontdoor_origin_group_id   = optional(string)
           cdn_frontdoor_origin_group_name = optional(string)
           forwarding_protocol             = optional(string, "MatchRequest")
-          query_string_caching_behavior   = optional(string, "IgnoreQueryString")
+          query_string_caching_behavior   = optional(string)
           query_string_parameters         = optional(list(string))
           compression_enabled             = optional(bool, false)
-          cache_behavior                  = optional(string, "HonorOrigin")
+          cache_behavior                  = optional(string)
         })), [])
         request_header_actions = optional(list(object({
           header_action = string
