@@ -1,3 +1,14 @@
+## 8.1.2 (2025-06-06)
+
+### Bug Fixes
+
+* **variables:** ✏️ update optional parameters for `query_string_caching_behavior` and `cache_behavior` 🐛 8f4a9d3
+
+### Miscellaneous Chores
+
+* **deps:** update dependency tflint to v0.58.0 398924e
+* **deps:** update dependency trivy to v0.63.0 d30ba98
+
 ## 8.1.1 (2025-05-23)
 
 ### Bug Fixes
