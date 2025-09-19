@@ -139,7 +139,7 @@ module "cdn_frontdoor" {
   rule_sets = [
     {
       name                 = "my_rule_set"
-      custom_resource_name = "custom_rule"
+      custom_resource_name = "customrule"
 
       rules = [{
         name                 = "redirect"
@@ -183,7 +183,7 @@ module "cdn_frontdoor" {
     },
     {
       name                 = "my_rule_set2"
-      custom_resource_name = "custom_rule2"
+      custom_resource_name = "customrule2"
     },
   ]
 
@@ -195,7 +195,7 @@ module "cdn_frontdoor" {
     custom_block_response_status_code = 403
     custom_block_response_body        = "PGh0bWw+CjxoZWFkZXI+PHRpdGxlPkhlbGxvPC90aXRsZT48L2hlYWRlcj4KPGJvZHk+CkhlbGxvIHdvcmxkCjwvYm9keT4KPC9odG1sPg=="
 
-    custom_rules = [
+    customrules = [
       {
         name                           = "Rule1"
         enabled                        = true
