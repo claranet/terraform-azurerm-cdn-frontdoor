@@ -1,3 +1,29 @@
+## 8.1.3 (2025-09-19)
+
+### Documentation
+
+* 📚️ fix default example 253dee4
+
+### Miscellaneous Chores
+
+* **⚙️:** ✏️ update template identifier for MR review 6125847
+* 🗑️ remove old commitlint configuration files b519551
+* **deps:** 🔗 bump AzureRM provider version to v4.31+ a9c0959
+* **deps:** update dependency claranet/diagnostic-settings/azurerm to ~> 8.1.0 298cbf7
+* **deps:** update dependency opentofu to v1.10.0 53b5c3a
+* **deps:** update dependency opentofu to v1.10.1 da36679
+* **deps:** update dependency opentofu to v1.10.3 c78bc6f
+* **deps:** update dependency opentofu to v1.10.6 c7b7dd8
+* **deps:** update dependency tflint to v0.58.1 3891bb2
+* **deps:** update dependency tflint to v0.59.1 4174dc2
+* **deps:** update dependency trivy to v0.66.0 40c8939
+* **deps:** update pre-commit hook pre-commit/pre-commit-hooks to v6 ec0d1af
+* **deps:** update pre-commit hook tofuutils/pre-commit-opentofu to v2.2.1 0dc2713
+* **deps:** update terraform claranet/diagnostic-settings/azurerm to ~> 8.2.0 e94083e
+* **deps:** update tools e4107d4
+* **deps:** update tools 803c9c7
+* **deps:** update tools ebafd24
+
 ## 8.1.2 (2025-06-06)
 
 ### Bug Fixes
