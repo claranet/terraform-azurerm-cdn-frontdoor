@@ -66,6 +66,9 @@ resource "azurerm_key_vault_certificate" "cert" {
     }
   }
 
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 
 module "cdn_frontdoor" {
