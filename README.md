@@ -341,20 +341,20 @@ module "cdn_frontdoor" {
 ## Providers
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | azurecaf | >= 1.2.28 |
 | azurerm | ~> 4.31 |
 
 ## Modules
 
 | Name | Source | Version |
-|------|--------|---------|
+| ---- | ------ | ------- |
 | diagnostics | claranet/diagnostic-settings/azurerm | ~> 8.2.0 |
 
 ## Resources
 
 | Name | Type |
-|------|------|
+| ---- | ---- |
 | [azurerm_cdn_frontdoor_custom_domain.main](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/cdn_frontdoor_custom_domain) | resource |
 | [azurerm_cdn_frontdoor_endpoint.main](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/cdn_frontdoor_endpoint) | resource |
 | [azurerm_cdn_frontdoor_firewall_policy.main](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/cdn_frontdoor_firewall_policy) | resource |
@@ -380,7 +380,7 @@ module "cdn_frontdoor" {
 ## Inputs
 
 | Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
+| ---- | ----------- | ---- | ------- | :------: |
 | client\_name | Client name/account used in naming. | `string` | n/a | yes |
 | custom\_domains | Azure CDN FrontDoor custom domains configurations. | <pre>list(object({<br/>    name                 = string<br/>    custom_resource_name = optional(string)<br/>    host_name            = string<br/>    dns_zone_id          = optional(string)<br/>    tls = optional(object({<br/>      certificate_type         = optional(string, "ManagedCertificate")<br/>      minimum_tls_version      = optional(string, "TLS12")<br/>      cdn_frontdoor_secret_id  = optional(string)<br/>      key_vault_certificate_id = optional(string)<br/>    }), {})<br/>  }))</pre> | `[]` | no |
 | custom\_name | Specifies the name of the FrontDoor Profile. | `string` | `""` | no |
@@ -409,7 +409,7 @@ module "cdn_frontdoor" {
 ## Outputs
 
 | Name | Description |
-|------|-------------|
+| ---- | ----------- |
 | id | The ID of the CDN FrontDoor Profile. |
 | identity\_principal\_id | Azure CDN FrontDoor system identity principal ID. |
 | module\_diagnostics | Diagnostics Settings module output. |
