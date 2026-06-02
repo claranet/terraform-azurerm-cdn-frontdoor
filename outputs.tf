@@ -16,56 +16,67 @@ output "identity_principal_id" {
 output "resource" {
   description = "Azure CDN FrontDoor Profile output object."
   value       = azurerm_cdn_frontdoor_profile.main
+  sensitive   = true
 }
 
 output "resource_endpoint" {
   description = "Azure CDN FrontDoor endpoints resource output."
   value       = azurerm_cdn_frontdoor_endpoint.main
+  sensitive   = true
 }
 
 output "resource_origin_group" {
   description = "Azure CDN FrontDoor origin group resource output."
   value       = azurerm_cdn_frontdoor_origin_group.main
+  sensitive   = true
 }
 
 output "resource_origin" {
   description = "Azure CDN FrontDoor origin resource output."
   value       = azurerm_cdn_frontdoor_origin.main
+  sensitive   = true
 }
 
 output "resource_custom_domain" {
   description = "Azure CDN FrontDoor custom domain resource output."
   value       = azurerm_cdn_frontdoor_custom_domain.main
+  sensitive   = true
 }
 
 output "resource_rule_set" {
   description = "Azure CDN FrontDoor rule set resource output."
   value       = azurerm_cdn_frontdoor_rule_set.main
+  sensitive   = true
 }
 
 output "resource_rule" {
   description = "Azure CDN FrontDoor rule resource output."
   value       = azurerm_cdn_frontdoor_rule.main
+  sensitive   = true
 }
 
 output "resource_firewall_policy" {
   description = "Azure CDN FrontDoor firewall policy resource output."
   value       = azurerm_cdn_frontdoor_firewall_policy.main
+  sensitive   = true
 }
 
 output "resource_security_policy" {
   description = "Azure CDN FrontDoor security policy resource output."
   value       = azurerm_cdn_frontdoor_security_policy.main
+  sensitive   = true
 }
 
 output "resource_route" {
   description = "Azure CDN FrontDoor route resource output."
   value       = azurerm_cdn_frontdoor_route.main
+  sensitive   = true
 }
 
 output "resource_secret" {
   description = "Azure CDN FrontDoor secret resource output."
   value       = azurerm_cdn_frontdoor_secret.main
+  sensitive   = true
 }
 
 output "module_diagnostics" {
