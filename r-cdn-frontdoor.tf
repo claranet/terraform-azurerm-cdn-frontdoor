@@ -50,7 +50,7 @@ resource "azurerm_cdn_frontdoor_custom_domain" "main" {
     for_each = each.value.tls == null ? [] : ["enabled"]
     content {
       certificate_type        = each.value.tls.certificate_type
-      minimum_tls_version     = each.value.tls.minimum_tls_version
+      minimum_version         = each.value.tls.minimum_tls_version
       cdn_frontdoor_secret_id = try(coalesce(each.value.tls.key_vault_certificate_id, each.value.tls.cdn_frontdoor_secret_id), null) == null ? each.value.tls.cdn_frontdoor_secret_id : try(azurerm_cdn_frontdoor_secret.main[each.value.name].id, null)
     }
   }
